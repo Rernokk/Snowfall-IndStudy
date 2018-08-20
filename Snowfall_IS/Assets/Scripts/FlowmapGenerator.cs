@@ -50,7 +50,7 @@ public class FlowmapGenerator : MonoBehaviour {
 		flowMap = new Texture2D(400, 400);
 		for (int i = 0; i < flowMap.width; i++){
 			for (int j = 0; j < flowMap.height; j++){
-				if (maskMap.GetPixel(i, j) == Color.white || true)
+				if (maskMap.GetPixel(i, j) == Color.white)
 				{
 					RaycastHit inf;
 					Physics.Raycast(new Ray(new Vector3(i * .25f, 40, j * .25f), Vector3.down), out inf, 100f, LayerMask.NameToLayer("Terrain"));
@@ -58,6 +58,8 @@ public class FlowmapGenerator : MonoBehaviour {
 					normDir.y = 0;
 					normDir.Normalize();
 					flowMap.SetPixel(i, j, new Color(.5f + -normDir.x * .02f, .5f + -normDir.z * .02f, 0));
+				} else {
+					flowMap.SetPixel(i, j, new Color(.5f, .5f, 0));
 				}
 			}
 		}

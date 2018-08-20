@@ -12,7 +12,7 @@ public class ObstacleFlowGenerator : MonoBehaviour {
 		genMap = new Texture2D(200, 200);
 		genMap.wrapMode = TextureWrapMode.Repeat;
 		GenerateTexture();
-		GetComponent<MeshRenderer>().material.SetTexture("_MainTex", genMap);
+		//GetComponent<MeshRenderer>().material.SetTexture("_MainTex", genMap);
 	}
 	
 	// Update is called once per frame

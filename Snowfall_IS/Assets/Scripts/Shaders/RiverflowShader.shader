@@ -5,11 +5,13 @@
 		_NormTex ("Normal", 2D) = "white" {}
 		_RateTex("Rate Texture", 2D) = "white" {}
 		_FlowTex ("Flow Texture", 2D) = "black" {}
+		_Overlay ("Generic Flow Overlay", 2D) = "white" {}
 		_ObsTex ("Obstacle Texture", 2D) = "white" {}
 		_MaskTex ("Mask Texture", 2D) = "white" {}
 		_Glossiness ("Smoothness", Range(0,1)) = 0.5
 		_Metallic ("Metallic", Range(0,1)) = 0.0
 		_Rate("Flow Rate", Range(0, 2)) = 0.0
+		_Debug("Debug Mode", Range(0, 1)) = 0
 	}
 	SubShader {
 		Tags { "RenderType"="Transparent" }
@@ -28,6 +30,7 @@
 		sampler2D _FlowTex;
 		sampler2D _ObsTex;
 		sampler2D _MaskTex;
+		sampler2D _Overlay;
 
 		struct Input {
 			float2 uv_MainTex;
@@ -38,6 +41,7 @@
 		fixed4 _Color;
 		fixed Per;
 		fixed _Rate;
+		fixed _Debug;
 
 		// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
 		// See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
@@ -52,14 +56,23 @@
 		}
 
 		void surf (Input IN, inout SurfaceOutputStandard o) {
+			if (_Debug > 0) {
+				o.Albedo = (tex2D(_FlowTex, IN.uv_MainTex) + tex2D(_Overlay, IN.uv_MainTex)) * .5;
+				o.Metallic = 0;
+				o.Smoothness = 0;
+				o.Alpha = 1;
+				return;
+			}
 			//fixed4 samp = tex2D (_RateTex, fixed2(IN.uv_MainTex.x, 0));
 			//fixed4 c = tex2D (_MainTex, IN.uv_MainTex + fixed2(0, _Time.y * samp.b)) * _Color;
-			fixed2 flowmapSample = ((tex2D(_ObsTex, IN.uv_MainTex).rg * tex2D(_FlowTex, IN.uv_MainTex).rg)) - 1;
-			fixed maskVal = tex2D(_MaskTex, IN.uv_MainTex).r;
+			fixed2 flowmapSample = 1 * ((2 * (tex2D(_FlowTex, IN.uv_MainTex).rg + tex2D(_Overlay, IN.uv_MainTex).rg)) - 1);
+			//fixed maskVal = tex2D(_MaskTex, IN.uv_MainTex).r;
+			fixed maskVal = 1;
 			//fixed2 pos = IN.uv_MainTex + ((tex2D(_FlowTex, IN.uv_MainTex).rg * 2) - fixed2(1, 1));
 			fixed4 c = tex2D (_MainTex, flowmapSample.rg + _Time.x * maskVal * _Rate + IN.uv_MainTex) * _Color;
 			o.Normal = tex2D (_NormTex, flowmapSample.rg + _Time.x * maskVal * _Rate + IN.uv_MainTex);
 			o.Albedo = c.rgb;
+			o.Albedo = fixed3(IN.uv_MainTex.rg, 0);
 			// Metallic and smoothness come from slider variables
 			o.Metallic = _Metallic;
 			o.Smoothness = _Glossiness;
