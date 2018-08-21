@@ -3,14 +3,10 @@
 		_Color ("Color", Color) = (1,1,1,1)
 		_MainTex ("Albedo (RGB)", 2D) = "white" {}
 		_NormTex ("Normal", 2D) = "white" {}
-		_RateTex("Rate Texture", 2D) = "white" {}
 		_FlowTex ("Flow Texture", 2D) = "black" {}
-		_Overlay ("Generic Flow Overlay", 2D) = "white" {}
-		_ObsTex ("Obstacle Texture", 2D) = "white" {}
-		_MaskTex ("Mask Texture", 2D) = "white" {}
 		_Glossiness ("Smoothness", Range(0,1)) = 0.5
 		_Metallic ("Metallic", Range(0,1)) = 0.0
-		_Rate("Flow Rate", Range(0, 2)) = 0.0
+		_Rate("Flow Rate", Range(0, 20)) = 0.0
 		_Debug("Debug Mode", Range(0, 1)) = 0
 	}
 	SubShader {
@@ -65,12 +61,12 @@
 			}
 			//fixed4 samp = tex2D (_RateTex, fixed2(IN.uv_MainTex.x, 0));
 			//fixed4 c = tex2D (_MainTex, IN.uv_MainTex + fixed2(0, _Time.y * samp.b)) * _Color;
-			fixed2 flowmapSample = 1 * ((2 * (tex2D(_FlowTex, IN.uv_MainTex).rg + tex2D(_Overlay, IN.uv_MainTex).rg)) - 1);
+			fixed2 flowmapSample = (2 * (tex2D(_FlowTex, IN.uv_MainTex).rg)) - 1;
 			//fixed maskVal = tex2D(_MaskTex, IN.uv_MainTex).r;
 			fixed maskVal = 1;
 			//fixed2 pos = IN.uv_MainTex + ((tex2D(_FlowTex, IN.uv_MainTex).rg * 2) - fixed2(1, 1));
-			fixed4 c = tex2D (_MainTex, flowmapSample.rg + _Time.x * maskVal * _Rate + IN.uv_MainTex) * _Color;
-			o.Normal = tex2D (_NormTex, flowmapSample.rg + _Time.x * maskVal * _Rate + IN.uv_MainTex);
+			fixed4 c = tex2D (_MainTex, flowmapSample.rg * _Time.x * maskVal * _Rate + IN.uv_MainTex) * _Color;
+			o.Normal = tex2D (_NormTex, flowmapSample.rg * _Time.x * maskVal * _Rate + IN.uv_MainTex);
 			o.Albedo = c.rgb;
 			//o.Albedo = fixed3(IN.uv_MainTex.rg, 0);
 			// Metallic and smoothness come from slider variables
