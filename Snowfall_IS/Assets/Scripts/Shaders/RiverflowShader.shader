@@ -72,7 +72,7 @@
 			fixed4 c = tex2D (_MainTex, flowmapSample.rg + _Time.x * maskVal * _Rate + IN.uv_MainTex) * _Color;
 			o.Normal = tex2D (_NormTex, flowmapSample.rg + _Time.x * maskVal * _Rate + IN.uv_MainTex);
 			o.Albedo = c.rgb;
-			o.Albedo = fixed3(IN.uv_MainTex.rg, 0);
+			//o.Albedo = fixed3(IN.uv_MainTex.rg, 0);
 			// Metallic and smoothness come from slider variables
 			o.Metallic = _Metallic;
 			o.Smoothness = _Glossiness;
