@@ -7,6 +7,7 @@
 		_Glossiness ("Smoothness", Range(0,1)) = 0.5
 		_Metallic ("Metallic", Range(0,1)) = 0.0
 		_Rate("Flow Rate", Range(0, 20)) = 0.0
+		_Alpha ("Alpha", Range(0, 1)) = 0.5
 		_Debug("Debug Mode", Range(0, 1)) = 0
 	}
 	SubShader {
@@ -38,6 +39,7 @@
 		fixed Per;
 		fixed _Rate;
 		fixed _Debug;
+		fixed _Alpha;
 
 		// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
 		// See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
@@ -59,20 +61,21 @@
 				o.Alpha = 1;
 				return;
 			}
+
 			//fixed4 samp = tex2D (_RateTex, fixed2(IN.uv_MainTex.x, 0));
 			//fixed4 c = tex2D (_MainTex, IN.uv_MainTex + fixed2(0, _Time.y * samp.b)) * _Color;
 			fixed2 flowmapSample = (2 * (tex2D(_FlowTex, IN.uv_MainTex).rg)) - 1;
-			//fixed maskVal = tex2D(_MaskTex, IN.uv_MainTex).r;
-			fixed maskVal = 1;
+			fixed maskVal = tex2D(_MaskTex, IN.uv_MainTex).r;
+			//fixed maskVal = 1;
 			//fixed2 pos = IN.uv_MainTex + ((tex2D(_FlowTex, IN.uv_MainTex).rg * 2) - fixed2(1, 1));
 			fixed4 c = tex2D (_MainTex, flowmapSample.rg * _Time.x * maskVal * _Rate + IN.uv_MainTex) * _Color;
 			o.Normal = tex2D (_NormTex, flowmapSample.rg * _Time.x * maskVal * _Rate + IN.uv_MainTex);
 			o.Albedo = c.rgb;
-			//o.Albedo = fixed3(IN.uv_MainTex.rg, 0);
+
 			// Metallic and smoothness come from slider variables
 			o.Metallic = _Metallic;
 			o.Smoothness = _Glossiness;
-			o.Alpha = .5;
+			o.Alpha = _Alpha;
 			//o.Alpha = 1;
 		}
 		ENDCG

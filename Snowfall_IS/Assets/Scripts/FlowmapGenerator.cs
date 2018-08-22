@@ -5,6 +5,10 @@ using UnityEngine;
 public class FlowmapGenerator : MonoBehaviour {
 	[SerializeField]
 	Texture2D maskMap, flowMap;
+
+	[SerializeField]
+	LayerMask mask;
+
 	// Use this for initialization
 	void Start () {
 		maskMap = new Texture2D(400, 400);
@@ -53,11 +57,11 @@ public class FlowmapGenerator : MonoBehaviour {
 				if (maskMap.GetPixel(i, j) == Color.white)
 				{
 					RaycastHit inf;
-					Physics.Raycast(new Ray(new Vector3(i * .25f, 40, j * .25f), Vector3.down), out inf, 100f, LayerMask.NameToLayer("Terrain"));
+					Physics.Raycast(new Ray(new Vector3(i * .25f, 40, j * .25f), Vector3.down), out inf, 100f, mask);
 					Vector3 normDir = inf.normal;
 					normDir.y = 0;
 					normDir.Normalize();
-					flowMap.SetPixel(i, j, new Color(.5f + -normDir.x * .02f, .5f + -normDir.z * .02f, 0));
+					flowMap.SetPixel(i, j, new Color(Mathf.Clamp01(.5f + -normDir.x * .05f), Mathf.Clamp01(.5f + -normDir.z * .05f), 0));
 				} else {
 					flowMap.SetPixel(i, j, new Color(.5f, .5f, 0));
 				}
@@ -67,7 +71,7 @@ public class FlowmapGenerator : MonoBehaviour {
 
 		GetComponent<MeshRenderer>().material.SetTexture("_MaskTex", maskMap);
 		GetComponent<MeshRenderer>().material.SetTexture("_FlowTex", flowMap);
-		//GetComponent<MeshRenderer>().material.SetTexture("_MainTex", maskMap);
+		//GetComponent<MeshRenderer>().material.SetTexture("_MainTex", flowMap);
 	}
 
 	// Update is called once per frame
