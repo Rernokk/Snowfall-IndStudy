@@ -36,7 +36,7 @@
 		half _Glossiness;
 		half _Metallic;
 		fixed4 _Color;
-		fixed Per;
+		fixed _Per;
 		fixed _Rate;
 		fixed _Debug;
 		fixed _Alpha;
@@ -66,10 +66,10 @@
 			//fixed4 c = tex2D (_MainTex, IN.uv_MainTex + fixed2(0, _Time.y * samp.b)) * _Color;
 			fixed2 flowmapSample = (2 * (tex2D(_FlowTex, IN.uv_MainTex).rg)) - 1;
 			fixed maskVal = tex2D(_MaskTex, IN.uv_MainTex).r;
-			//fixed maskVal = 1;
-			//fixed2 pos = IN.uv_MainTex + ((tex2D(_FlowTex, IN.uv_MainTex).rg * 2) - fixed2(1, 1));
-			fixed4 c = tex2D (_MainTex, flowmapSample.rg * _Time.x * maskVal * _Rate + IN.uv_MainTex) * _Color;
-			o.Normal = tex2D (_NormTex, flowmapSample.rg * _Time.x * maskVal * _Rate + IN.uv_MainTex);
+
+			_Per = sin(_Time.x * .1);
+			fixed4 c = tex2D (_MainTex, flowmapSample.rg * _Per * maskVal * _Rate + IN.uv_MainTex) * _Color;
+			o.Normal = tex2D (_NormTex, flowmapSample.rg * _Per * maskVal * _Rate + IN.uv_MainTex);
 			o.Albedo = c.rgb;
 
 			// Metallic and smoothness come from slider variables

@@ -25,14 +25,16 @@ public class FlowmapGenerator : MonoBehaviour {
 				}
 			}
 		}
+
+		//Blur Alpha
 		Color[,] colArray = new Color[maskMap.width, maskMap.height];
-		for (int i = 0; i < maskMap.width; i++){
-			for (int j = 0; j < maskMap.height; j++){
+		for (int i = 0; i < maskMap.width; i++)
+		{
+			for (int j = 0; j < maskMap.height; j++)
+			{
 				colArray[i, j] = maskMap.GetPixel(i, j);
 			}
 		}
-
-		//Blur
 		for (int i = 0; i < maskMap.width; i++){
 			for (int j = 0; j < maskMap.height; j++){
 				Color temp = new Color(0, 0, 0);
@@ -67,6 +69,46 @@ public class FlowmapGenerator : MonoBehaviour {
 				}
 			}
 		}
+
+		//Blur Flow
+		colArray = new Color[flowMap.width, flowMap.height];
+		for (int i = 0; i < flowMap.width; i++)
+		{
+			for (int j = 0; j < flowMap.height; j++)
+			{
+				colArray[i, j] = flowMap.GetPixel(i, j);
+			}
+		}
+
+		for (int k = 0; k < 1; k++)
+		{
+			for (int i = 0; i < flowMap.width; i++)
+			{
+				for (int j = 0; j < flowMap.height; j++)
+				{
+					Color temp = new Color(0, 0, 0);
+					for (int a = -1; a <= 1; a++)
+					{
+						for (int b = -1; b <= 1; b++)
+						{
+							if (a + i >= 0 && a + i < flowMap.width && b + j >= 0 && b + j < flowMap.height)
+							{
+								temp += colArray[i + a, j + b];
+							}
+						}
+					}
+					temp /= 9.0f;
+					colArray[i, j] = temp;
+				}
+			}
+		}
+
+		for (int i = 0; i < flowMap.width; i++){
+			for (int j = 0; j < flowMap.height; j++){
+				flowMap.SetPixel(i, j, colArray[i,j]);
+			}
+		}
+
 		flowMap.Apply();
 
 		GetComponent<MeshRenderer>().material.SetTexture("_MaskTex", maskMap);
