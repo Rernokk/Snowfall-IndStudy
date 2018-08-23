@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class FlowmapGenerator : MonoBehaviour {
@@ -109,6 +110,8 @@ public class FlowmapGenerator : MonoBehaviour {
 			}
 		}
 
+		//byte[] bytes = flowMap.EncodeToPNG();
+		//File.WriteAllBytes(Application.dataPath + "/../GeneratedFlowMap.png", bytes);
 		flowMap.Apply();
 
 		GetComponent<MeshRenderer>().material.SetTexture("_MaskTex", maskMap);
