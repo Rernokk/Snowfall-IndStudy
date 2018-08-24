@@ -12,13 +12,13 @@ public class FlowmapGenerator : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		maskMap = new Texture2D(400, 400);
+		maskMap = new Texture2D(1024, 1024);
 		for (int i = 0; i < maskMap.width; i++)
 		{
 			for (int j = 0; j < maskMap.height; j++)
 			{
 				RaycastHit inf;
-				Physics.Raycast(new Ray(new Vector3(i * .25f, 40, j * .25f), Vector3.down), out inf, 100f);
+				Physics.Raycast(new Ray(new Vector3(i * 100.0f / maskMap.width, 40, j * 100.0f / maskMap.height), Vector3.down), out inf, 100f);
 				if (inf.transform == null || inf.transform.tag == "Terrain"){
 					maskMap.SetPixel(i, j, Color.black);
 				} else {
@@ -28,39 +28,39 @@ public class FlowmapGenerator : MonoBehaviour {
 		}
 
 		//Blur Alpha
-		Color[,] colArray = new Color[maskMap.width, maskMap.height];
-		for (int i = 0; i < maskMap.width; i++)
-		{
-			for (int j = 0; j < maskMap.height; j++)
-			{
-				colArray[i, j] = maskMap.GetPixel(i, j);
-			}
-		}
-		for (int i = 0; i < maskMap.width; i++){
-			for (int j = 0; j < maskMap.height; j++){
-				Color temp = new Color(0, 0, 0);
-				for (int a = -1; a <= 1; a++)
-				{
-					for (int b = -1; b <= 1; b++){
-						if (a + i >= 0 && a + i < maskMap.width && b + j >= 0 && b + j < maskMap.height){
-							temp += colArray[i + a, j + b];
-						}
-					}
-				}
-				temp /= 9.0f;
-				maskMap.SetPixel(i, j, temp);
-			}
-		}
+		//Color[,] colArray = new Color[maskMap.width, maskMap.height];
+		//for (int i = 0; i < maskMap.width; i++)
+		//{
+		//	for (int j = 0; j < maskMap.height; j++)
+		//	{
+		//		colArray[i, j] = maskMap.GetPixel(i, j);
+		//	}
+		//}
+		//for (int i = 0; i < maskMap.width; i++){
+		//	for (int j = 0; j < maskMap.height; j++){
+		//		Color temp = new Color(0, 0, 0);
+		//		for (int a = -1; a <= 1; a++)
+		//		{
+		//			for (int b = -1; b <= 1; b++){
+		//				if (a + i >= 0 && a + i < maskMap.width && b + j >= 0 && b + j < maskMap.height){
+		//					temp += colArray[i + a, j + b];
+		//				}
+		//			}
+		//		}
+		//		temp /= 9.0f;
+		//		maskMap.SetPixel(i, j, temp);
+		//	}
+		//}
 
-		maskMap.Apply();
+		//maskMap.Apply();
 
-		flowMap = new Texture2D(400, 400);
+		flowMap = new Texture2D(1024, 1024);
 		for (int i = 0; i < flowMap.width; i++){
 			for (int j = 0; j < flowMap.height; j++){
 				if (maskMap.GetPixel(i, j) == Color.white)
 				{
 					RaycastHit inf;
-					Physics.Raycast(new Ray(new Vector3(i * .25f, 40, j * .25f), Vector3.down), out inf, 100f, mask);
+					Physics.Raycast(new Ray(new Vector3(i * 100.0f / flowMap.width, 40, j * 100.0f / flowMap.height), Vector3.down), out inf, 100f, mask);
 					Vector3 normDir = inf.normal;
 					normDir.y = 0;
 					normDir.Normalize();
@@ -72,43 +72,43 @@ public class FlowmapGenerator : MonoBehaviour {
 		}
 
 		//Blur Flow
-		colArray = new Color[flowMap.width, flowMap.height];
-		for (int i = 0; i < flowMap.width; i++)
-		{
-			for (int j = 0; j < flowMap.height; j++)
-			{
-				colArray[i, j] = flowMap.GetPixel(i, j);
-			}
-		}
+		//colArray = new Color[flowMap.width, flowMap.height];
+		//for (int i = 0; i < flowMap.width; i++)
+		//{
+		//	for (int j = 0; j < flowMap.height; j++)
+		//	{
+		//		colArray[i, j] = flowMap.GetPixel(i, j);
+		//	}
+		//}
 
-		for (int k = 0; k < 1; k++)
-		{
-			for (int i = 0; i < flowMap.width; i++)
-			{
-				for (int j = 0; j < flowMap.height; j++)
-				{
-					Color temp = new Color(0, 0, 0);
-					for (int a = -1; a <= 1; a++)
-					{
-						for (int b = -1; b <= 1; b++)
-						{
-							if (a + i >= 0 && a + i < flowMap.width && b + j >= 0 && b + j < flowMap.height)
-							{
-								temp += colArray[i + a, j + b];
-							}
-						}
-					}
-					temp /= 9.0f;
-					colArray[i, j] = temp;
-				}
-			}
-		}
+		//for (int k = 0; k < 1; k++)
+		//{
+		//	for (int i = 0; i < flowMap.width; i++)
+		//	{
+		//		for (int j = 0; j < flowMap.height; j++)
+		//		{
+		//			Color temp = new Color(0, 0, 0);
+		//			for (int a = -1; a <= 1; a++)
+		//			{
+		//				for (int b = -1; b <= 1; b++)
+		//				{
+		//					if (a + i >= 0 && a + i < flowMap.width && b + j >= 0 && b + j < flowMap.height)
+		//					{
+		//						temp += colArray[i + a, j + b];
+		//					}
+		//				}
+		//			}
+		//			temp /= 9.0f;
+		//			colArray[i, j] = temp;
+		//		}
+		//	}
+		//}
 
-		for (int i = 0; i < flowMap.width; i++){
-			for (int j = 0; j < flowMap.height; j++){
-				flowMap.SetPixel(i, j, colArray[i,j]);
-			}
-		}
+		//for (int i = 0; i < flowMap.width; i++){
+		//	for (int j = 0; j < flowMap.height; j++){
+		//		flowMap.SetPixel(i, j, colArray[i,j]);
+		//	}
+		//}
 
 		//byte[] bytes = flowMap.EncodeToPNG();
 		//File.WriteAllBytes(Application.dataPath + "/../GeneratedFlowMap.png", bytes);
