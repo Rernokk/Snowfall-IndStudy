@@ -82,13 +82,13 @@
 
 			fixed maskVal = tex2D(_MaskTex, IN.uv_MainTex).r;
 
-			_Per0 = (_Time.x);
-			_Per1 = smoothstep(_Time.x, (_Time.x + .37272), unity_DeltaTime.x);
+			_Per0 = (_Time.x * .1);
+			//_Per1 = smoothstep(_Time.x, (_Time.x + .37272), unity_DeltaTime.x);
 
 			//_Per = 1;
-			fixed4 c = (tex2D(_MainTex, flowmapSample.rg * _Per0 * maskVal * _Rate + IN.uv_MainTex) + tex2D(_MainTex, flowmapSample.rg * _Per1 * maskVal * _Rate + fixed2(.1235123, .83733) + IN.uv_MainTex)) * _Color;
-			//o.Normal = tex2D (_NormTex, flowmapSample.rg * _Per0 * maskVal * _Rate + IN.uv_MainTex) + tex2D(_NormTex, flowmapSample.rg * _Per1 *.5 * maskVal * _Rate + float2(.5, .5) + IN.uv_MainTex);
-			o.Albedo = c.rgb;
+			fixed4 c = (tex2D(_MainTex, flowmapSample.rg * _Per0 * maskVal * _Rate + IN.uv_MainTex)) * _Color;// + tex2D(_MainTex, flowmapSample.rg * _Per1 * maskVal * _Rate + fixed2(.1235123, .83733) + IN.uv_MainTex)) * _Color;
+			//o.Normal = tex2D (_NormTex, flowmapSample.rg * _Per0 * maskVal * _Rate + IN.uv_MainTex);
+			o.Albedo = tex2D(_MainTex, IN.uv_MainTex).rgb;
 			//o.Albedo = tex2D(_FlowTex, IN.uv_MainTex);
 
 			// Metallic and smoothness come from slider variables

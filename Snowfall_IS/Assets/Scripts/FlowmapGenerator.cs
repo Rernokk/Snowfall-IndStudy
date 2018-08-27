@@ -128,10 +128,6 @@ public class FlowmapGenerator : MonoBehaviour {
 		//byte[] bytes = flowMap.EncodeToPNG();
 		//File.WriteAllBytes(Application.dataPath + "/../GeneratedFlowMap.png", bytes);
 		flowMap.Apply();
-
-		GetComponent<MeshRenderer>().material.SetTexture("_MaskTex", maskMap);
-		GetComponent<MeshRenderer>().material.SetTexture("_FlowTex", flowMap);
-		//GetComponent<MeshRenderer>().material.SetTexture("_MainTex", flowMap);
 	}
 
 	// Update is called once per frame
