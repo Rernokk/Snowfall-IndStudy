@@ -56,39 +56,16 @@
 		}
 
 		void surf (Input IN, inout SurfaceOutputStandard o) {
-			if (_Debug > 0) {
-				o.Albedo = (tex2D(_FlowTex, IN.uv_MainTex) + tex2D(_Overlay, IN.uv_MainTex)) * .5;
-				o.Metallic = 0;
-				o.Smoothness = 0;
-				o.Alpha = 1;
-				return;
-			}
 
-			//fixed4 samp = tex2D (_RateTex, fixed2(IN.uv_MainTex.x, 0));
-			//fixed4 c = tex2D (_MainTex, IN.uv_MainTex + fixed2(0, _Time.y * samp.b)) * _Color;
 			fixed2 flowmapSample = (2 * (tex2D(_FlowTex, IN.uv_MainTex).rg)) - 1;
-			fixed offSet = 0.015;
-			fixed2 sample0 = (2 * (tex2D(_FlowTex, IN.uv_MainTex + fixed2(0, offSet)).rg)) - 1;
-			fixed2 sample1 = (2 * (tex2D(_FlowTex, IN.uv_MainTex + fixed2(0, -offSet)).rg)) - 1;
-			fixed2 sample2 = (2 * (tex2D(_FlowTex, IN.uv_MainTex + fixed2(offSet, 0)).rg)) - 1;
-			fixed2 sample3 = (2 * (tex2D(_FlowTex, IN.uv_MainTex + fixed2(-offSet, 0)).rg)) - 1;
-
-			fixed2 sample4 = (2 * (tex2D(_FlowTex, IN.uv_MainTex + fixed2(offSet, offSet)).rg)) - 1;
-			fixed2 sample5 = (2 * (tex2D(_FlowTex, IN.uv_MainTex + fixed2(-offSet, offSet)).rg)) - 1;
-			fixed2 sample6 = (2 * (tex2D(_FlowTex, IN.uv_MainTex + fixed2(offSet, -offSet)).rg)) - 1;
-			fixed2 sample7 = (2 * (tex2D(_FlowTex, IN.uv_MainTex + fixed2(-offSet, -offSet)).rg)) - 1;
-
-			flowmapSample = (sample0 + sample1 + sample2 + sample3 + sample4 + sample5 + sample6 + sample7) * .125;
 
 			fixed maskVal = tex2D(_MaskTex, IN.uv_MainTex).r;
 
 			_Per0 = (_Time.x * .1);
-			//_Per1 = smoothstep(_Time.x, (_Time.x + .37272), unity_DeltaTime.x);
-
-			//_Per = 1;
+			
 			fixed4 c = (tex2D(_MainTex, flowmapSample.rg * _Per0 * maskVal * _Rate + IN.uv_MainTex)) * _Color;// + tex2D(_MainTex, flowmapSample.rg * _Per1 * maskVal * _Rate + fixed2(.1235123, .83733) + IN.uv_MainTex)) * _Color;
-			//o.Normal = tex2D (_NormTex, flowmapSample.rg * _Per0 * maskVal * _Rate + IN.uv_MainTex);
-			o.Albedo = tex2D(_MainTex, IN.uv_MainTex).rgb;
+			o.Normal = (tex2D(_NormTex, flowmapSample.rg * _Per0 * maskVal * _Rate + IN.uv_MainTex));
+			o.Albedo = c.rgb;
 			//o.Albedo = tex2D(_FlowTex, IN.uv_MainTex);
 
 			// Metallic and smoothness come from slider variables

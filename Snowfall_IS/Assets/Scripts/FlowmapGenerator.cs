@@ -13,6 +13,8 @@ public class FlowmapGenerator : MonoBehaviour {
 	[SerializeField]
 	float cutFactor = .05f;
 
+	Material mat;
+
 	// Use this for initialization
 	void Start () {
 		maskMap = new Texture2D(512, 512);
@@ -30,33 +32,6 @@ public class FlowmapGenerator : MonoBehaviour {
 			}
 		}
 
-		//Blur Alpha
-		Color[,] colArray;//= new Color[maskMap.width, maskMap.height];
-		//for (int i = 0; i < maskMap.width; i++)
-		//{
-		//	for (int j = 0; j < maskMap.height; j++)
-		//	{
-		//		colArray[i, j] = maskMap.GetPixel(i, j);
-		//	}
-		//}
-		//for (int i = 0; i < maskMap.width; i++){
-		//	for (int j = 0; j < maskMap.height; j++){
-		//		Color temp = new Color(0, 0, 0);
-		//		for (int a = -1; a <= 1; a++)
-		//		{
-		//			for (int b = -1; b <= 1; b++){
-		//				if (a + i >= 0 && a + i < maskMap.width && b + j >= 0 && b + j < maskMap.height){
-		//					temp += colArray[i + a, j + b];
-		//				}
-		//			}
-		//		}
-		//		temp /= 9.0f;
-		//		maskMap.SetPixel(i, j, temp);
-		//	}
-		//}
-
-		//maskMap.Apply();
-
 		flowMap = new Texture2D(512, 512);
 		for (int i = 0; i < flowMap.width; i++){
 			for (int j = 0; j < flowMap.height; j++){
@@ -73,61 +48,10 @@ public class FlowmapGenerator : MonoBehaviour {
 				}
 			}
 		}
-
-		//Blur Flow
-		//colArray = new Color[flowMap.width, flowMap.height];
-		//for (int i = 0; i < flowMap.width; i++)
-		//{
-		//	for (int j = 0; j < flowMap.height; j++)
-		//	{
-		//		colArray[i, j] = flowMap.GetPixel(i, j);
-		//	}
-		//}
-
-		//for (int k = 0; k < 1; k++)
-		//{
-		//	for (int i = 0; i < flowMap.width; i++)
-		//	{
-		//		for (int j = 0; j < flowMap.height; j++)
-		//		{
-		//			Color temp = new Color(0, 0, 0);
-		//			float weight = 0;
-		//			for (int a = -1; a <= 1; a++)
-		//			{
-		//				for (int b = -1; b <= 1; b++)
-		//				{
-		//					if (a + i >= 0 && a + i < flowMap.width && b + j >= 0 && b + j < flowMap.height)
-		//					{
-		//						if (a != 0 || b != 0)
-		//						{
-		//							float scale = .01f;
-		//							temp += colArray[i + a, j + b] * scale;
-		//							weight += scale;
-		//						} else
-		//						{
-		//							temp += colArray[i + a, j + b];
-		//							weight++;
-		//						}
-		//					}
-		//				}
-		//			}
-		//			temp /= weight;
-		//			colArray[i, j] = temp;
-		//		}
-		//	}
-		//}
-
-		//for (int i = 0; i < flowMap.width; i++)
-		//{
-		//	for (int j = 0; j < flowMap.height; j++)
-		//	{
-		//		flowMap.SetPixel(i, j, colArray[i, j]);
-		//	}
-		//}
-
-		//byte[] bytes = flowMap.EncodeToPNG();
-		//File.WriteAllBytes(Application.dataPath + "/../GeneratedFlowMap.png", bytes);
 		flowMap.Apply();
+
+		mat = GetComponent<MeshRenderer>().material;
+		mat.SetTexture("_FlowTex", flowMap);
 	}
 
 	// Update is called once per frame
