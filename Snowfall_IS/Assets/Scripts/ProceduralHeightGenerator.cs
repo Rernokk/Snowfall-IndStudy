@@ -8,7 +8,12 @@ public class ProceduralHeightGenerator : MonoBehaviour {
 
 	[SerializeField]
 	Texture2D terrainTexture;
+	Texture2D noiseTex;
+	FastNoise myNoise;
 	void Start () {
+		myNoise = new FastNoise((int)Time.time);
+		myNoise.SetNoiseType(FastNoise.NoiseType.Perlin);
+
 		terrainTexture = new Texture2D((int)terrain.terrainData.bounds.size.x * 2, (int)terrain.terrainData.bounds.size.z * 2);
 		print(terrainTexture.width + ", " + terrainTexture.height);
 		float max = terrain.terrainData.bounds.size.y;
@@ -22,6 +27,7 @@ public class ProceduralHeightGenerator : MonoBehaviour {
 					Vector3 res = terrain.terrainData.GetInterpolatedNormal((float)i / terrainTexture.width, (float)j / terrainTexture.height) * .5f;
 					res.y = res.z;
 					res.z = 0;
+					res.Normalize();
 					val -= res;
 					terrainTexture.SetPixel(i, j, new Color(val.x, val.y, 0));
 				} else {
@@ -32,12 +38,31 @@ public class ProceduralHeightGenerator : MonoBehaviour {
 		terrainTexture.Apply();
 
 		GetComponent<MeshRenderer>().material.SetTexture("_FlowTex", terrainTexture);
+
+		noiseTex = new Texture2D(32, 32);
+		for (int i = 0; i < noiseTex.width; i++){
+			for (int j = 0; j < noiseTex.height; j++){
+				float val = myNoise.GetNoise(i, j);
+				noiseTex.SetPixel(i, j, new Color(val, val, val, 1));
+			}
+		}
+		noiseTex.Apply();
+
+		//GetComponent<MeshRenderer>().material.SetTexture("_MainTex", noiseTex);
 		GetComponent<MeshRenderer>().enabled = true;
 		//terrain.terrainData
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		
+		//for (int i = 0; i < noiseTex.width; i++)
+		//{
+		//	for (int j = 0; j < noiseTex.height; j++)
+		//	{
+		//		float val = myNoise.GetNoise(i, j);
+		//		noiseTex.SetPixel(i, j, new Color(val, val, val, 1));
+		//	}
+		//}
+		//noiseTex.Apply();
 	}
 }

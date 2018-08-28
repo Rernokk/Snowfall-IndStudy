@@ -58,11 +58,11 @@
 		void surf (Input IN, inout SurfaceOutputStandard o) {
 
 			fixed2 flowmapSample = (2 * (tex2D(_FlowTex, IN.uv_MainTex).rg)) - 1;
-
+			//flowmapSample += fixed2(0, 1);
 			fixed maskVal = tex2D(_MaskTex, IN.uv_MainTex).r;
 
-			_Per0 = (_Time.x * .1);
-			
+			_Per0 = _Time.x % 1;
+
 			fixed4 c = (tex2D(_MainTex, flowmapSample.rg * _Per0 * maskVal * _Rate + IN.uv_MainTex)) * _Color;// + tex2D(_MainTex, flowmapSample.rg * _Per1 * maskVal * _Rate + fixed2(.1235123, .83733) + IN.uv_MainTex)) * _Color;
 			o.Normal = (tex2D(_NormTex, flowmapSample.rg * _Per0 * maskVal * _Rate + IN.uv_MainTex));
 			o.Albedo = c.rgb;
