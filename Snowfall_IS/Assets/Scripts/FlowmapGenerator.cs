@@ -53,9 +53,4 @@ public class FlowmapGenerator : MonoBehaviour {
 		mat = GetComponent<MeshRenderer>().material;
 		mat.SetTexture("_FlowTex", flowMap);
 	}
-
-	// Update is called once per frame
-	void Update () {
-
-	}
 }

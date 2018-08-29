@@ -6402,7 +6402,7 @@ MonoBehaviour:
   mask:
     serializedVersion: 2
     m_Bits: 32768
-  cutFactor: 1
+  cutFactor: 0.5
 --- !u!114 &883185104
 MonoBehaviour:
   m_ObjectHideFlags: 0

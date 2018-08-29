@@ -372,6 +372,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   terrain: {fileID: 271009728}
   terrainTexture: {fileID: 0}
+  includeTerrain: 1
+  includeGradientBias: 0
 --- !u!33 &2098380953
 MeshFilter:
   m_ObjectHideFlags: 0
