@@ -48,13 +48,41 @@
 			data.vertex = UnityPixelSnap(data.vertex);
 		}
 
+		fixed2 ApplyFlowAlbedo(fixed2 flowSample, fixed2 textureLocation){
+			fixed2 retVal = fixed2(0.,0.);
+			
+			//Lifespan
+			const float half_period = .05;
+			const float period = 2 * half_period;
+
+			//Sample A
+			float sampleA_Offset = fmod(_Time, period);
+			float sampleA_Weight = sampleA_Offset / half_period;
+			
+			//Clamping to [0, 1]
+			if (sampleA_Weight > 1.0) sampleA_Weight = 2.0 - sampleA_Weight;
+
+			//Sample B
+			float sampleB_Offset = fmod(_Time + half_period, period);
+			float sampleB_Weight = 1.0 - sampleA_Weight;
+
+			half2 sampA = tex2D(_FlowTex, textureLocation - (flowSample * sampleA_Offset));
+			half2 sampB = tex2D(_FlowTex, textureLocation - (flowSample * sampleB_Offset));
+			retVal += sampA * sampleA_Weight;
+			retVal += sampB * sampleA_Weight;
+			retVal = normalize(retVal);
+			return retVal;
+		}
+
 		void surf (Input IN, inout SurfaceOutputStandard o) {
 			fixed2 flowmapSample = (2 * (tex2D(_FlowTex, IN.uv_MainTex).rg)) - 1;
-
-			float timeSample = frac(_Time[1]);//frac(_Time[1]);
+			//smoothstep(flowmapSample, fixed2(0,0), .1);
+			//float timeSample = frac(_Time[1]);//frac(_Time[1]);
+			
+			fixed2 sampleLocation = ApplyFlowAlbedo(flowmapSample, IN.uv_MainTex);
 
 			//fixed4 albedoSample = tex2D(_MainTex, IN.uv_MainTex + flowmapSample * _Rate * timeSample);
-			fixed4 albedoSample = tex2D(_MainTex, IN.uv_MainTex + flowmapSample * _Rate * timeSample);
+			fixed4 albedoSample = tex2D(_MainTex, sampleLocation * .05f + IN.uv_MainTex);
 			//fixed4 normalSample = tex2D(_NormTex, IN.uv_MainTex);
 
 			//Display offset albedo
