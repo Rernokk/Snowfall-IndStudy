@@ -373,9 +373,9 @@ MonoBehaviour:
   terrain: {fileID: 271009728}
   terrainTexture: {fileID: 0}
   includeTerrain: 1
-  includeGradientBias: 0
+  includeGradientBias: 1
   weightScale: 0.05
-  gradientScale: 0
+  gradientScale: 5
 --- !u!33 &2098380953
 MeshFilter:
   m_ObjectHideFlags: 0

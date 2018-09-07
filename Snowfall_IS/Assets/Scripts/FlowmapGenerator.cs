@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class FlowmapGenerator : MonoBehaviour {
+public class FlowmapGenerator : MonoBehaviour
+{
 	[SerializeField]
 	public Texture2D maskMap, flowMap;
 
@@ -24,7 +25,8 @@ public class FlowmapGenerator : MonoBehaviour {
 	Vector2[,] backupArray;
 
 	// Use this for initialization
-	void Start () {
+	void Start()
+	{
 		maskMap = new Texture2D(512, 512);
 		flowMap = new Texture2D(512, 512);
 		for (int i = 0; i < maskMap.width; i++)
@@ -33,9 +35,12 @@ public class FlowmapGenerator : MonoBehaviour {
 			{
 				RaycastHit inf;
 				Physics.Raycast(new Ray(new Vector3(i * 100.0f / maskMap.width, 50, j * 100.0f / maskMap.height), Vector3.down), out inf, 100f);
-				if (inf.transform == null || inf.transform.tag == "Terrain"){
+				if (inf.transform == null || inf.transform.tag == "Terrain")
+				{
 					maskMap.SetPixel(i, j, Color.black);
-				} else {
+				}
+				else
+				{
 					maskMap.SetPixel(i, j, Color.white);
 				}
 			}
@@ -74,29 +79,32 @@ public class FlowmapGenerator : MonoBehaviour {
 					Vector2 origCol = backupArray[k, j];
 					if (origCol != Vector2.zero)
 					{
+						float falloff = .9f;
 						for (int i = 0; i < amnt; i++)
 						{
-							int indX = k + i * (int)(backupArray[k, j].x != 0 ? Mathf.Sign(backupArray[k, j].x) : 0);
-							int indY = j + i * (int)(backupArray[k, j].y != 0 ? Mathf.Sign(backupArray[k, j].y) : 0);
+							int indX = k - i * (int)(backupArray[k, j].x != 0 ? Mathf.Sign(backupArray[k, j].x) : 0);
+							int indY = j - i * (int)(backupArray[k, j].y != 0 ? Mathf.Sign(backupArray[k, j].y) : 0);
 							if (indY >= 0 && indX >= 0 && indX < flowMap.width && indY < flowMap.height)
 							{
-								vecArray[indX, indY] += backupArray[k, j] * (amnt - i) / amnt;
+								//vecArray[indX, indY] += backupArray[k, j] * (amnt - i) / amnt;
+								vecArray[indX, indY] += backupArray[k, j] * falloff;
+								falloff *= .9f;
 							}
 						}
 					}
 				}
 			}
+		}
 
-			for (int i = 0; i < flowMap.width; i++)
+		for (int i = 0; i < flowMap.width; i++)
+		{
+			for (int j = 0; j < flowMap.height; j++)
 			{
-				for (int j = 0; j < flowMap.height; j++)
-				{
-					Vector2 clamped = vecArray[i, j];
-					clamped += Vector2.one;
-					clamped *= .5f;
-					Color col = new Color(Mathf.Clamp01(clamped.x), Mathf.Clamp01(clamped.y), 0);
-					flowMap.SetPixel(i, j, col);
-				}
+				Vector2 clamped = vecArray[i, j];
+				clamped += Vector2.one;
+				clamped *= .5f;
+				Color col = new Color(Mathf.Clamp01(clamped.x), Mathf.Clamp01(clamped.y), 0);
+				flowMap.SetPixel(i, j, col);
 			}
 		}
 		flowMap.Apply();
@@ -109,7 +117,8 @@ public class FlowmapGenerator : MonoBehaviour {
 		mat.SetTexture("_FlowTex", flowMap);
 	}
 
-	void CreateFlowMap(){
+	void CreateFlowMap()
+	{
 		for (int i = 0; i < flowMap.width; i++)
 		{
 			for (int j = 0; j < flowMap.height; j++)
@@ -132,7 +141,8 @@ public class FlowmapGenerator : MonoBehaviour {
 		flowMap.Apply();
 	}
 
-	void CreateFlowMapVTwo (){
+	void CreateFlowMapVTwo()
+	{
 		for (int i = 0; i < flowMap.width; i++)
 		{
 			for (int j = 0; j < flowMap.height; j++)

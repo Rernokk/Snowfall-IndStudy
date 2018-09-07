@@ -53,39 +53,39 @@ public class ProceduralHeightGenerator : MonoBehaviour
 			}
 
 			//Blur Inertial Motion
-			Color[,] colArray = new Color[terrainTexture.width, terrainTexture.height];
-			for (int i = 0; i < terrainTexture.width; i++)
-			{
-				for (int j = 0; j < terrainTexture.height; j++)
-				{
-					colArray[i, j] = new Color(.5f, .5f, 0f);
-				}
-			}
-			for (int i = 0; i < terrainTexture.width; i++)
-			{
-				for (int j = 0; j < terrainTexture.height; j++)
-				{
-					Color origCol = terrainTexture.GetPixel(i, j);
-					for (int k = 0; k <= 5; k++)
-					{
-						int tarX = i + (int)(k * Mathf.Sign(origCol.r - .5f));
-						int tarY = j + (int)(k * Mathf.Sign(origCol.g - .5f));
-						if (tarX > 0 && tarX < terrainTexture.width && tarY > 0 && tarY < terrainTexture.height)
-						{
-							colArray[tarX, tarY] += .25f * ((origCol - new Color(.5f, .5f, 0f)) / k);
-							colArray[tarX, tarY] = new Color(Mathf.Clamp01(colArray[tarX, tarY].r), Mathf.Clamp01(colArray[tarX, tarY].g), Mathf.Clamp01(colArray[tarX, tarY].b));
-						}
-					}
-				}
-			}
+			//Color[,] colArray = new Color[terrainTexture.width, terrainTexture.height];
+			//for (int i = 0; i < terrainTexture.width; i++)
+			//{
+			//	for (int j = 0; j < terrainTexture.height; j++)
+			//	{
+			//		colArray[i, j] = new Color(.5f, .5f, 0f);
+			//	}
+			//}
+			//for (int i = 0; i < terrainTexture.width; i++)
+			//{
+			//	for (int j = 0; j < terrainTexture.height; j++)
+			//	{
+			//		Color origCol = terrainTexture.GetPixel(i, j);
+			//		for (int k = 0; k <= 5; k++)
+			//		{
+			//			int tarX = i + (int)(k * Mathf.Sign(origCol.r - .5f));
+			//			int tarY = j + (int)(k * Mathf.Sign(origCol.g - .5f));
+			//			if (tarX > 0 && tarX < terrainTexture.width && tarY > 0 && tarY < terrainTexture.height)
+			//			{
+			//				colArray[tarX, tarY] += .25f * ((origCol - new Color(.5f, .5f, 0f)) / k);
+			//				colArray[tarX, tarY] = new Color(Mathf.Clamp01(colArray[tarX, tarY].r), Mathf.Clamp01(colArray[tarX, tarY].g), Mathf.Clamp01(colArray[tarX, tarY].b));
+			//			}
+			//		}
+			//	}
+			//}
 
-			for (int i = 0; i < terrainTexture.width; i++)
-			{
-				for (int j = 0; j < terrainTexture.height; j++)
-				{
-					terrainTexture.SetPixel(i, j, colArray[i, j]);
-				}
-			}
+			//for (int i = 0; i < terrainTexture.width; i++)
+			//{
+			//	for (int j = 0; j < terrainTexture.height; j++)
+			//	{
+			//		terrainTexture.SetPixel(i, j, colArray[i, j]);
+			//	}
+			//}
 
 			terrainTexture.Apply();
 			GetComponent<MeshRenderer>().material.SetTexture("_FlowTex", terrainTexture);
