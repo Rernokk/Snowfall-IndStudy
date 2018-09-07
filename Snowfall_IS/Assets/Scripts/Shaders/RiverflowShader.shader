@@ -7,7 +7,7 @@
 
 		_Glossiness ("Smoothness", Range(0,1)) = 0.5
 		_Metallic ("Metallic", Range(0,1)) = 0.0
-		_Rate ("Flow Rate", Range(0, 5)) = 0.0
+		_Rate ("Flow Rate", Range(0, 15)) = 0.0
 		_Alpha ("River Transparency", Range(0, 1)) = 1.0
 	}
 	SubShader {
@@ -76,6 +76,15 @@
 
 		void surf (Input IN, inout SurfaceOutputStandard o) {
 			fixed2 flowmapSample = (2 * (tex2D(_FlowTex, IN.uv_MainTex).rg)) - 1;
+<<<<<<< HEAD
+
+			float timeSample = frac(_Time[1]);//frac(_Time[1]);
+			timeSample = _Time[1];
+
+			//fixed4 albedoSample = tex2D(_MainTex, IN.uv_MainTex + flowmapSample * _Rate * timeSample);
+			fixed4 albedoSample = (tex2D(_FlowTex, IN.uv_MainTex) * .0f + 1.0f * tex2D(_MainTex, IN.uv_MainTex + flowmapSample * _Rate * timeSample));
+			fixed4 normalSample = tex2D(_NormTex, IN.uv_MainTex + flowmapSample * _Rate * timeSample);
+=======
 			//smoothstep(flowmapSample, fixed2(0,0), .1);
 			//float timeSample = frac(_Time[1]);//frac(_Time[1]);
 			
@@ -83,6 +92,7 @@
 
 			//fixed4 albedoSample = tex2D(_MainTex, IN.uv_MainTex + flowmapSample * _Rate * timeSample);
 			fixed4 albedoSample = tex2D(_MainTex, sampleLocation * .05f + IN.uv_MainTex);
+>>>>>>> ec27d8324bf0e93858c5a512837575e128f853b1
 			//fixed4 normalSample = tex2D(_NormTex, IN.uv_MainTex);
 
 			//Display offset albedo
@@ -90,6 +100,7 @@
 
 			//Display Flow Map
 			//o.Albedo = tex2D(_FlowTex, IN.uv_MainTex);
+			//o.Alpha = 1;
 
 			//Normal Map
 			//o.Normal = normalSample.rgb;
