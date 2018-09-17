@@ -24,6 +24,10 @@ public class FlowmapGenerator : MonoBehaviour
 	Vector2[,] vecArray;
 	Vector2[,] backupArray;
 
+	FastNoise myNoise;
+	Texture2D perlinNoise;
+	int perlinOffX = 0, perlinOffY = 0;
+
 	// Use this for initialization
 	void Start()
 	{
@@ -115,6 +119,29 @@ public class FlowmapGenerator : MonoBehaviour
 
 		mat = GetComponent<MeshRenderer>().material;
 		mat.SetTexture("_FlowTex", flowMap);
+
+		perlinNoise = new Texture2D(256, 256);
+		myNoise = new FastNoise();
+		myNoise.SetNoiseType(FastNoise.NoiseType.Perlin);
+		UpdatePerlinNoise();
+		//mat.SetTexture("_MainTex", perlinNoise);
+	}
+
+
+	void Update(){
+	}
+
+	void UpdatePerlinNoise(){
+		return;
+		for (int i = 0; i < perlinNoise.width; i++)
+		{
+			for (int j = 0; j < perlinNoise.height; j++)
+			{
+				float col = myNoise.GetPerlin(i * 3 + perlinOffX, j * 3 + perlinOffY);
+				perlinNoise.SetPixel(i, j, new Color(col, col, col));
+			}
+		}
+		perlinNoise.Apply();
 	}
 
 	void CreateFlowMap()
@@ -129,7 +156,7 @@ public class FlowmapGenerator : MonoBehaviour
 					Physics.Raycast(new Ray(new Vector3(i * 100.0f / flowMap.width, 40, j * 100.0f / flowMap.height), Vector3.down), out inf, 100f, mask);
 					Vector3 normDir = inf.normal;
 					normDir.y = 0;
-					normDir.Normalize();
+					//normDir.Normalize();
 					flowMap.SetPixel(i, j, new Color(Mathf.Clamp01(.5f + -normDir.x * cutFactor), Mathf.Clamp01(.5f + -normDir.z * cutFactor), 0));
 				}
 				else

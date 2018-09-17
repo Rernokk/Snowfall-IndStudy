@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour {
 	int camIndex = 0;
+
+	[SerializeField]
+	float lerpVal = .005f;
 	// Use this for initialization
 	void Start ()
 	{
@@ -29,7 +32,7 @@ public class CameraController : MonoBehaviour {
 	}
 	
 	void LateUpdate(){
-		Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, transform.GetChild(camIndex).transform.position, .025f);
-		Camera.main.transform.rotation = Quaternion.Lerp(Camera.main.transform.rotation, transform.GetChild(camIndex).transform.rotation, .025f);
+		Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, transform.GetChild(camIndex).transform.position, lerpVal);
+		Camera.main.transform.rotation = Quaternion.Lerp(Camera.main.transform.rotation, transform.GetChild(camIndex).transform.rotation, lerpVal);
 	}
 }

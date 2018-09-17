@@ -81,26 +81,18 @@
 
 		void surf (Input IN, inout SurfaceOutputStandard o) {
 			fixed2 flowmapSample = (2 * (tex2D(_FlowTex, IN.uv_MainTex).rg)) - 1;
-			float timeSample = frac((_Time[1]) * _Rate);//frac(_Time[1]);
-			float timeSampleTwo = frac((_Time[1]) * _Rate + .5);
-			//timeSample = _Time[1];
+			fixed noiseSample = tex2D(_NoiseTex, IN.uv_MainTex).r;
 
-			//fixed4 albedoSample = tex2D(_MainTex, IN.uv_MainTex + flowmapSample * _Rate * timeSample);
+			float timeSample = frac(_Time[1] * _Rate);
+			float timeSampleTwo = frac(_Time[1] * _Rate + .5);
+
 			fixed4 albedoSample = (tex2D(_FlowTex, IN.uv_MainTex) * (1 - _Debug) + _Debug * tex2D(_MainTex, IN.uv_MainTex + flowmapSample * timeSample));
 			fixed4 albedoSampleTwo = (tex2D(_FlowTex, IN.uv_MainTex) * (1 - _Debug) + _Debug * tex2D(_MainTex, IN.uv_MainTex + flowmapSample * timeSampleTwo));
 			fixed4 normalSampleOne = tex2D(_NormTex, IN.uv_MainTex + flowmapSample * _Rate * timeSample);
 			fixed4 normalSampleTwo = tex2D(_NormTex, IN.uv_MainTex + flowmapSample * _Rate * timeSampleTwo);
-			//smoothstep(flowmapSample, fixed2(0,0), .1);
-			//float timeSample = frac(_Time[1]);//frac(_Time[1]);
-			
-			//fixed2 sampleLocation = ApplyFlowAlbedo(flowmapSample, IN.uv_MainTex);
-
-			//fixed4 albedoSample = tex2D(_MainTex, IN.uv_MainTex + flowmapSample * _Rate * timeSample);
-			//fixed4 albedoSample = tex2D(_MainTex, sampleLocation * .05f + IN.uv_MainTex);
-			//fixed4 normalSample = tex2D(_NormTex, IN.uv_MainTex);
 
 			//Display offset albedo
-			o.Albedo = lerp(albedoSample.rgb, albedoSampleTwo.rgb, 2 * abs(timeSample -  .5f));
+			o.Albedo = lerp(albedoSample.rgb, albedoSampleTwo.rgb, 2 * abs(timeSample -  .5f)) * _Color;
 
 			//Display Flow Map
 			//o.Albedo = tex2D(_FlowTex, IN.uv_MainTex);
