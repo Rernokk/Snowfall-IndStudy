@@ -76,27 +76,69 @@ public class FlowmapGenerator : MonoBehaviour
 
 		if (applyBlur)
 		{
-			for (int k = 0; k < flowMap.width; k++)
+			#region Wrongo
+			//Wrongo
+			//for (int k = 0; k < flowMap.width; k++)
+			//{
+			//	for (int j = 0; j < flowMap.height; j++)
+			//	{
+			//		Vector2 origCol = backupArray[k, j];
+			//		if (maskMap.GetPixel(k,j) == Color.white)
+			//		{
+			//			float falloff = .9f;
+			//			for (int i = 0; i < amnt; i++)
+			//			{
+			//				int indX = k - i * (int)(backupArray[k, j].x != 0 ? Mathf.Sign(backupArray[k, j].x) : 0);
+			//				int indY = j - i * (int)(backupArray[k, j].y != 0 ? Mathf.Sign(backupArray[k, j].y) : 0);
+			//				if (indY >= 0 && indX >= 0 && indX < flowMap.width && indY < flowMap.height)
+			//				{
+			//					//vecArray[indX, indY] += backupArray[k, j] * (amnt - i) / amnt;
+			//					vecArray[indX, indY] += backupArray[k, j] * falloff;
+			//					falloff *= .9f;
+			//				}
+			//			}
+			//		}
+			//	}
+			//}
+			#endregion
+
+			//Blur Example, Graphics Shaders Theory & Practice
+			for (int k = 0; k < 8; k++)
 			{
-				for (int j = 0; j < flowMap.height; j++)
+				for (int i = 0; i < flowMap.width; i++)
 				{
-					Vector2 origCol = backupArray[k, j];
-					if (origCol != Vector2.zero)
+					for (int j = 0; j < flowMap.height; j++)
 					{
-						float falloff = .9f;
-						for (int i = 0; i < amnt; i++)
+						if (maskMap.GetPixel(i, j) == Color.white)
 						{
-							int indX = k - i * (int)(backupArray[k, j].x != 0 ? Mathf.Sign(backupArray[k, j].x) : 0);
-							int indY = j - i * (int)(backupArray[k, j].y != 0 ? Mathf.Sign(backupArray[k, j].y) : 0);
-							if (indY >= 0 && indX >= 0 && indX < flowMap.width && indY < flowMap.height)
+							Vector2 tar = Vector2.zero;
+							for (int x = -1; x <= 1; x++)
 							{
-								//vecArray[indX, indY] += backupArray[k, j] * (amnt - i) / amnt;
-								vecArray[indX, indY] += backupArray[k, j] * falloff;
-								falloff *= .9f;
+								for (int y = -1; y <= 1; y++)
+								{
+									if (x + i >= 0 && x + i < flowMap.width && j + y >= 0 && j + y < flowMap.height)
+									{
+										if (x == 0 && y == 0)
+										{
+											tar += backupArray[i + x, j + y] * 4;
+										}
+										else if (x == 0 || y == 0)
+										{
+											tar += backupArray[i + x, j + y] * 2;
+										}
+										else
+										{
+											tar += backupArray[i + x, j + y];
+										}
+									}
+								}
 							}
+							tar /= 16;
+							vecArray[i, j] = tar;
 						}
 					}
 				}
+				backupArray = vecArray;
 			}
 		}
 
@@ -113,26 +155,35 @@ public class FlowmapGenerator : MonoBehaviour
 		}
 		flowMap.Apply();
 
-		flowMap.filterMode = FilterMode.Trilinear;
+		flowMap.filterMode = FilterMode.Point;
+		//flowMap.filterMode = FilterMode.Trilinear;
 		flowMap.wrapMode = TextureWrapMode.Repeat;
 		#endregion
 
 		mat = GetComponent<MeshRenderer>().material;
 		mat.SetTexture("_FlowTex", flowMap);
 
-		perlinNoise = new Texture2D(256, 256);
+		perlinNoise = new Texture2D(1024, 1024);
 		myNoise = new FastNoise();
 		myNoise.SetNoiseType(FastNoise.NoiseType.Perlin);
+		//myNoise.SetFrequency(1f);
 		UpdatePerlinNoise();
-		//mat.SetTexture("_MainTex", perlinNoise);
+		//		mat.SetTexture("_MainTex", perlinNoise);
+		byte[] output = flowMap.EncodeToPNG();
+		File.WriteAllBytes(Application.dataPath + "/../Fileout_ModBlur.png", output);
 	}
 
 
-	void Update(){
+	void Update()
+	{
+		//UpdatePerlinNoise();
+		perlinOffX++;
+		perlinOffY++;
 	}
 
-	void UpdatePerlinNoise(){
-		return;
+	void UpdatePerlinNoise()
+	{
+		//return;
 		for (int i = 0; i < perlinNoise.width; i++)
 		{
 			for (int j = 0; j < perlinNoise.height; j++)
@@ -156,7 +207,7 @@ public class FlowmapGenerator : MonoBehaviour
 					Physics.Raycast(new Ray(new Vector3(i * 100.0f / flowMap.width, 40, j * 100.0f / flowMap.height), Vector3.down), out inf, 100f, mask);
 					Vector3 normDir = inf.normal;
 					normDir.y = 0;
-					//normDir.Normalize();
+					normDir.Normalize();
 					flowMap.SetPixel(i, j, new Color(Mathf.Clamp01(.5f + -normDir.x * cutFactor), Mathf.Clamp01(.5f + -normDir.z * cutFactor), 0));
 				}
 				else
@@ -180,7 +231,7 @@ public class FlowmapGenerator : MonoBehaviour
 					Physics.Raycast(new Ray(new Vector3(i * 100.0f / flowMap.width, 40, j * 100.0f / flowMap.height), Vector3.down), out inf, 100f, mask);
 					Vector3 normDir = inf.normal;
 					normDir.y = 0;
-					//normDir.Normalize();
+					normDir.Normalize();
 					vecArray[i, j] = new Vector2(-normDir.x * cutFactor, -normDir.z * cutFactor);
 				}
 			}
