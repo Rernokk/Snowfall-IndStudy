@@ -303,20 +303,30 @@ public class FlowmapGenerator : MonoBehaviour
 				}
 				else
 				{
-					int offset = 1;
+					int offset = 5;
 					float mag = 100f;
 					Color col = generatedTexture.GetPixel(i, j);
+					Vector2 dif = Vector2.zero;
 					if (i + offset < generatedTexture.width || i - offset >= 0)
 					{
-						float dif = (texB2D.GetPixel(i - offset, j) - texB2D.GetPixel(i + offset, j)).r * mag;
-						col.r += dif;
+						//float dif = (texB2D.GetPixel(i - offset, j) - texB2D.GetPixel(i + offset, j)).r * mag;
+						dif.x = (texB2D.GetPixel(i - offset, j) - texB2D.GetPixel(i + offset, j)).r * mag;
+						//col.r += dif;
 					}
 
 					if (j + offset < generatedTexture.height || j - offset >= 0)
 					{
-						float dif = (texB2D.GetPixel(i, j - offset) - texB2D.GetPixel(i, j + offset)).r * mag;
-						col.g += dif;
+						//float dif = (texB2D.GetPixel(i, j - offset) - texB2D.GetPixel(i, j + offset)).r * mag;
+						dif.y = (texB2D.GetPixel(i, j - offset) - texB2D.GetPixel(i, j + offset)).r * mag;
+						//col.g += dif;
 					}
+
+					dif.Normalize();
+					dif *= .25f;
+					dif += new Vector2(1, 1);
+					dif *= .5f;
+					col.r += dif.x;
+					col.g += dif.y;
 					generatedTexture.SetPixel(i, j, col);
 				}
 			}
@@ -327,6 +337,10 @@ public class FlowmapGenerator : MonoBehaviour
 		mat.SetTexture("_FlowTex", generatedTexture);
 
 		byte[] output = generatedTexture.EncodeToPNG();
-		File.WriteAllBytes(Application.dataPath + "/../Fileout_Generated.png", output);
+		File.WriteAllBytes(Application.dataPath + "/../Generated.png", output);
+		output = texA2D.EncodeToPNG();
+		File.WriteAllBytes(Application.dataPath + "/../TexA.png", output);
+		output = texB2D.EncodeToPNG();
+		File.WriteAllBytes(Application.dataPath + "/../TexB.png", output);
 	}
 }
