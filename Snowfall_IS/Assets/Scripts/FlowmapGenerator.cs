@@ -28,6 +28,11 @@ public class FlowmapGenerator : MonoBehaviour
 	Texture2D perlinNoise;
 	int perlinOffX = 0, perlinOffY = 0;
 
+	public Texture2D texA2D;
+	public Texture2D texB2D;
+
+	public Texture2D generatedTexture;
+
 	// Use this for initialization
 	void Start()
 	{
@@ -161,7 +166,7 @@ public class FlowmapGenerator : MonoBehaviour
 		#endregion
 
 		mat = GetComponent<MeshRenderer>().material;
-		mat.SetTexture("_FlowTex", flowMap);
+		//mat.SetTexture("_FlowTex", flowMap);
 
 		perlinNoise = new Texture2D(1024, 1024);
 		myNoise = new FastNoise();
@@ -169,8 +174,8 @@ public class FlowmapGenerator : MonoBehaviour
 		//myNoise.SetFrequency(1f);
 		UpdatePerlinNoise();
 		//		mat.SetTexture("_MainTex", perlinNoise);
-		byte[] output = flowMap.EncodeToPNG();
-		File.WriteAllBytes(Application.dataPath + "/../Fileout_ModBlur.png", output);
+		//byte[] output = flowMap.EncodeToPNG();
+		//File.WriteAllBytes(Application.dataPath + "/../Fileout_ModBlur.png", output);
 	}
 
 
@@ -236,5 +241,92 @@ public class FlowmapGenerator : MonoBehaviour
 				}
 			}
 		}
+	}
+
+	public void CalculateFlowMap()
+	{
+		if (texA2D == null || texB2D == null)
+		{
+			return;
+		}
+		float lowestA = 2;
+		float lowestB = 2;
+		float highestA = 0;
+		float highestB = 0;
+
+		for (int i = 0; i < texA2D.width; i++)
+		{
+			for (int j = 0; j < texA2D.height; j++)
+			{
+				float tempA = texA2D.GetPixel(i, j).r;
+				if (tempA > 0)
+				{
+					if (lowestA > tempA)
+					{
+						lowestA = tempA;
+					}
+					else if (highestA < tempA)
+					{
+						highestA = tempA;
+					}
+
+					float tempB = texB2D.GetPixel(i, j).r;
+					if (lowestB > tempB)
+					{
+						lowestB = tempB;
+					}
+					else if (highestB < tempB)
+					{
+						highestB = tempB;
+					}
+				}
+			}
+		}
+
+		generatedTexture = new Texture2D(texA2D.width, texA2D.height);
+		for (int i = 0; i < generatedTexture.width; i++)
+		{
+			for (int j = 0; j < generatedTexture.height; j++)
+			{
+				generatedTexture.SetPixel(i, j, new Color(.5f, .5f, 0f));
+			}
+		}
+
+		for (int i = 0; i < generatedTexture.width; i++)
+		{
+			for (int j = 0; j < generatedTexture.height; j++)
+			{
+				if (texB2D.GetPixel(i, j).r <= lowestB)
+				{
+					generatedTexture.SetPixel(i, j, Color.blue);
+					continue;
+				}
+				else
+				{
+					int offset = 1;
+					float mag = 100f;
+					Color col = generatedTexture.GetPixel(i, j);
+					if (i + offset < generatedTexture.width || i - offset >= 0)
+					{
+						float dif = (texB2D.GetPixel(i - offset, j) - texB2D.GetPixel(i + offset, j)).r * mag;
+						col.r += dif;
+					}
+
+					if (j + offset < generatedTexture.height || j - offset >= 0)
+					{
+						float dif = (texB2D.GetPixel(i, j - offset) - texB2D.GetPixel(i, j + offset)).r * mag;
+						col.g += dif;
+					}
+					generatedTexture.SetPixel(i, j, col);
+				}
+			}
+		}
+
+		generatedTexture.Apply();
+		generatedTexture.filterMode = FilterMode.Point;
+		mat.SetTexture("_FlowTex", generatedTexture);
+
+		byte[] output = generatedTexture.EncodeToPNG();
+		File.WriteAllBytes(Application.dataPath + "/../Fileout_Generated.png", output);
 	}
 }

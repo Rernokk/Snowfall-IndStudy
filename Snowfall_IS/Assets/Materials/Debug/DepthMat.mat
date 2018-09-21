@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: DepthMat
-  m_Shader: {fileID: 4800000, guid: de82a2def5e1c2948a3d8dcc98fca719, type: 3}
+  m_Shader: {fileID: 4800000, guid: edb1fb901bd54b24697acc3f0375ecc4, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -72,5 +72,5 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.745283, g: 0.53786933, b: 0.53786933, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
