@@ -36,8 +36,8 @@ public class FlowmapGenerator : MonoBehaviour
 	// Use this for initialization
 	void Start()
 	{
-		maskMap = new Texture2D(512, 512);
-		flowMap = new Texture2D(512, 512);
+		maskMap = new Texture2D(1024, 1024);
+		flowMap = new Texture2D(1024, 1024);
 		for (int i = 0; i < maskMap.width; i++)
 		{
 			for (int j = 0; j < maskMap.height; j++)
@@ -174,8 +174,8 @@ public class FlowmapGenerator : MonoBehaviour
 		//myNoise.SetFrequency(1f);
 		UpdatePerlinNoise();
 		//		mat.SetTexture("_MainTex", perlinNoise);
-		//byte[] output = flowMap.EncodeToPNG();
-		//File.WriteAllBytes(Application.dataPath + "/../Fileout_ModBlur.png", output);
+		byte[] output = flowMap.EncodeToPNG();
+		File.WriteAllBytes(Application.dataPath + "/../Fileout_ModBlur.png", output);
 	}
 
 
@@ -298,43 +298,81 @@ public class FlowmapGenerator : MonoBehaviour
 			{
 				if (texB2D.GetPixel(i, j).r <= lowestB)
 				{
-					generatedTexture.SetPixel(i, j, Color.blue);
 					continue;
 				}
 				else
 				{
-					int offset = 5;
-					float mag = 100f;
-					Color col = generatedTexture.GetPixel(i, j);
-					Vector2 dif = Vector2.zero;
-					if (i + offset < generatedTexture.width || i - offset >= 0)
-					{
-						//float dif = (texB2D.GetPixel(i - offset, j) - texB2D.GetPixel(i + offset, j)).r * mag;
-						dif.x = (texB2D.GetPixel(i - offset, j) - texB2D.GetPixel(i + offset, j)).r * mag;
-						//col.r += dif;
-					}
+					//int offset = 1;
+					//float mag = 1;
+					//Color col = new Color(.5f,.5f, 0f);
+					//Vector2 dif = Vector2.zero;
+					//if (i + offset < generatedTexture.width || i - offset >= 0)
+					//{
+					//	//float dif = (texB2D.GetPixel(i - offset, j) - texB2D.GetPixel(i + offset, j)).r * mag;
+					//	dif.x = (texB2D.GetPixel(i - offset, j).r - texB2D.GetPixel(i + offset, j).r) * mag;
+					//	//col.r += dif;
+					//} else {
+					//	dif.x = 0;
+					//}
 
-					if (j + offset < generatedTexture.height || j - offset >= 0)
-					{
-						//float dif = (texB2D.GetPixel(i, j - offset) - texB2D.GetPixel(i, j + offset)).r * mag;
-						dif.y = (texB2D.GetPixel(i, j - offset) - texB2D.GetPixel(i, j + offset)).r * mag;
-						//col.g += dif;
-					}
+					//if (j + offset < generatedTexture.height || j - offset >= 0)
+					//{
+					//	//float dif = (texB2D.GetPixel(i, j - offset) - texB2D.GetPixel(i, j + offset)).r * mag;
+					//	dif.y = (texB2D.GetPixel(i, j - offset).r - texB2D.GetPixel(i, j + offset).r) * mag;
+					//	//col.g += dif;
+					//} else {
+					//	dif.y = 0;
+					//}
 
-					dif.Normalize();
-					dif *= .25f;
-					dif += new Vector2(1, 1);
-					dif *= .5f;
-					col.r += dif.x;
-					col.g += dif.y;
-					generatedTexture.SetPixel(i, j, col);
+					//dif.Normalize();
+					////dif *= .01f;
+					//dif *= .5f;
+					//dif += new Vector2(.5f, .5f);
+					//col.r = dif.x;
+					//col.g = dif.y;
+					//generatedTexture.SetPixel(i, j, col);
+
+					//OKAY
+					//Sample Heights along X axis
+					float sampleXA, sampleXB;
+					sampleXA = texB2D.GetPixel(i - 1, j).r * 100;
+					sampleXB = texB2D.GetPixel(i + 1, j).r * 100;
+
+					//Sample Heights along Y axis
+					float sampleYA, sampleYB;
+					sampleYA = texB2D.GetPixel(i - 1, j).r * 100;
+					sampleYB = texB2D.GetPixel(i + 1, j).r * 100;
+
+					//Calculate Direction for X
+					float xDirection = sampleXB - sampleXA;
+
+					//Calculate Direction for Y
+					float yDirection = sampleYB - sampleYA;
+
+					//Amplifying Difference for X
+					xDirection *= 1;
+
+					//Amplifying Difference for Y
+					yDirection *= 1;
+
+					//Fix Range from (-1, 1) to (0, 1) for X
+					xDirection = xDirection * .5f + .5f;
+					
+					//Fix Range from (-1, 1) to (0, 1) for Y
+					yDirection = yDirection * .5f + .5f;
+
+					//Assign Color Channels
+					generatedTexture.SetPixel(i, j, new Color(xDirection, yDirection, 0));
+					if (generatedTexture.GetPixel(i,j) == new Color(.5f,.5f,0f)){
+						generatedTexture.SetPixel(i, j, Color.black);
+					}
 				}
 			}
 		}
 
 		generatedTexture.Apply();
 		generatedTexture.filterMode = FilterMode.Point;
-		mat.SetTexture("_FlowTex", generatedTexture);
+		//mat.SetTexture("_FlowTex", generatedTexture);
 
 		byte[] output = generatedTexture.EncodeToPNG();
 		File.WriteAllBytes(Application.dataPath + "/../Generated.png", output);

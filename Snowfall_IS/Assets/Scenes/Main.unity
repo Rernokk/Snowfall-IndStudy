@@ -5004,7 +5004,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!154 &397956403
 TerrainCollider:
   m_ObjectHideFlags: 0
@@ -5235,7 +5235,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &699754557
 Transform:
   m_ObjectHideFlags: 0
@@ -5359,19 +5359,19 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 9b9a3d5157f17bd4595fe20c4bcfcbdd, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.7071068
+      value: -0.6532815
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 9b9a3d5157f17bd4595fe20c4bcfcbdd, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.27059805
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 9b9a3d5157f17bd4595fe20c4bcfcbdd, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0.27059805
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 9b9a3d5157f17bd4595fe20c4bcfcbdd, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071067
+      value: 0.6532815
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 9b9a3d5157f17bd4595fe20c4bcfcbdd, type: 3}
       propertyPath: m_RootOrder
@@ -5387,11 +5387,19 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 2300000, guid: 9b9a3d5157f17bd4595fe20c4bcfcbdd, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: 9b9a3d5157f17bd4595fe20c4bcfcbdd, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 9b9a3d5157f17bd4595fe20c4bcfcbdd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90.00001
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 9b9a3d5157f17bd4595fe20c4bcfcbdd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 45
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9b9a3d5157f17bd4595fe20c4bcfcbdd, type: 3}
@@ -5936,7 +5944,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 32768
   cutFactor: 0.2
-  applyBlur: 1
+  applyBlur: 0
   amnt: 128
   texA2D: {fileID: 0}
   texB2D: {fileID: 0}
