@@ -38,6 +38,6 @@ public class DepthCameraTest : MonoBehaviour {
 			//river.texB = tex;
 			river.texB2D = tex;
 		}
-		river.CalculateFlowMap();
+		//river.CalculateFlowMap();
 	}
 }

@@ -6,6 +6,7 @@ public class Weather_Controller : MonoBehaviour {
 	[SerializeField]
 	FogVolume fog;
 
+	[SerializeField]
 	float startVis = 200;
 	// Use this for initialization
 	void Start () {

@@ -166,16 +166,16 @@ public class FlowmapGenerator : MonoBehaviour
 		#endregion
 
 		mat = GetComponent<MeshRenderer>().material;
-		//mat.SetTexture("_FlowTex", flowMap);
+		mat.SetTexture("_FlowTex", flowMap);
 
 		perlinNoise = new Texture2D(1024, 1024);
 		myNoise = new FastNoise();
 		myNoise.SetNoiseType(FastNoise.NoiseType.Perlin);
 		//myNoise.SetFrequency(1f);
 		UpdatePerlinNoise();
-		//		mat.SetTexture("_MainTex", perlinNoise);
-		byte[] output = flowMap.EncodeToPNG();
-		File.WriteAllBytes(Application.dataPath + "/../Fileout_ModBlur.png", output);
+		mat.SetTexture("_MainTex", perlinNoise);
+		//byte[] output = flowMap.EncodeToPNG();
+		//File.WriteAllBytes(Application.dataPath + "/../Fileout_ModBlur.png", output);
 	}
 
 
@@ -193,7 +193,7 @@ public class FlowmapGenerator : MonoBehaviour
 		{
 			for (int j = 0; j < perlinNoise.height; j++)
 			{
-				float col = myNoise.GetPerlin(i * 3 + perlinOffX, j * 3 + perlinOffY);
+				float col = (1 + myNoise.GetPerlin(i * 3 + perlinOffX, j * 3 + perlinOffY)) * .5f;
 				perlinNoise.SetPixel(i, j, new Color(col, col, col));
 			}
 		}
