@@ -5,7 +5,7 @@
 		_NormTex ("Normal", 2D) = "white" {}
 		_FlowTex ("Flow Texture", 2D) = "black" {}
 		_NoiseTex ("Noise Texture", 2D) = "white" {}
-
+		_GlossMap("Gloss Map", 2D) = "white" {}
 		_Glossiness ("Smoothness", Range(0,1)) = 0.5
 		_Metallic ("Metallic", Range(0,1)) = 0.0
 		_Rate ("Flow Rate", Range(0, 3)) = 0.0
@@ -27,6 +27,7 @@
 		sampler2D _NormTex;
 		sampler2D _FlowTex;
 		sampler2D _NoiseTex;
+		sampler2D _GlossMap;
 
 		struct Input {
 			float2 uv_MainTex;
@@ -51,35 +52,9 @@
 			data.vertex = UnityPixelSnap(data.vertex);
 		}
 
-		//fixed2 ApplyFlowAlbedo(fixed2 flowSample, fixed2 textureLocation){
-		//	fixed2 retVal = fixed2(0.,0.);
-		//	
-		//	//Lifespan
-		//	const float half_period = .05;
-		//	const float period = 2 * half_period;
-
-		//	//Sample A
-		//	float sampleA_Offset = fmod(_Time, period);
-		//	float sampleA_Weight = sampleA_Offset / half_period;
-		//	
-		//	//Clamping to [0, 1]
-		//	if (sampleA_Weight > 1.0) sampleA_Weight = 2.0 - sampleA_Weight;
-
-		//	//Sample B
-		//	float sampleB_Offset = fmod(_Time + half_period, period);
-		//	float sampleB_Weight = 1.0 - sampleA_Weight;
-
-		//	half2 sampA = tex2D(_FlowTex, textureLocation - (flowSample * sampleA_Offset));
-		//	half2 sampB = tex2D(_FlowTex, textureLocation - (flowSample * sampleB_Offset));
-		//	retVal += sampA * sampleA_Weight;
-		//	retVal += sampB * sampleA_Weight;
-		//	retVal = normalize(retVal);
-		//	return retVal;
-		//}
-
 		void surf (Input IN, inout SurfaceOutputStandard o) {
-			fixed2 flowmapSample = (2 * (tex2D(_FlowTex, IN.uv_MainTex).rg)) - 1;
-			fixed noiseSample = tex2D(_NoiseTex, IN.uv_MainTex).r;
+			fixed2 flowmapSample = (2 * (tex2D(_FlowTex, IN.uv_MainTex * 50.0).rg)) - 1;
+			fixed noiseSample = tex2D(_NoiseTex, IN.uv_MainTex * 50.0).r;
 
 			float timeSample = frac(_Time[1] * _Rate);
 			float timeSampleTwo = frac(_Time[1] * _Rate + .5);
@@ -101,7 +76,10 @@
 
 			// Metallic and smoothness come from slider variables
 			o.Metallic = _Metallic;
-			o.Smoothness = _Glossiness;
+			
+			float glossSampleOne = tex2D(_GlossMap, IN.uv_MainTex + flowmapSample * timeSample).r;
+			float glossSampleTwo = tex2D(_GlossMap, IN.uv_MainTex + flowmapSample * timeSampleTwo).r;
+			o.Smoothness = _Glossiness * lerp(glossSampleOne, glossSampleTwo, 2 * abs(timeSample-.5f));
 			o.Alpha = _Alpha;
 		}
 		ENDCG
