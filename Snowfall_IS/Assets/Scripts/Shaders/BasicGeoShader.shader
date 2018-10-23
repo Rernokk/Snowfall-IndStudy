@@ -6,7 +6,7 @@ Shader "Custom/BasicGeoShader"
 	{
 		_MainTex("Texture", 2D) = "white" {}
 		_SnowTex("Snow Texture", 2D) = "white" {}
-		_Factor("Factor", Range(0, 3)) = 0.0
+		_Factor("Factor", Range(0, 0.05)) = 0.0
 		_Color("Color", Color) = (1,1,1,1)
 		_SnowAccum("Snow Accumulation", Range(0, 1)) = 0.0
 	}
@@ -95,10 +95,12 @@ Shader "Custom/BasicGeoShader"
 					float4 worldNorm1 = mul(unity_ObjectToWorld, input[1].normal);
 					float4 worldNorm2 = mul(unity_ObjectToWorld, input[2].normal);
 
+					float normFac = 0;
+
 					//o.vertex = mul(unity_ObjectToWorld, input[0].vertex - normalize((input[0].vertex - input[1].vertex) + (input[0].vertex - input[2].vertex)) * _Factor);
 					//o.vertex = input[0].vertex;
 
-					o.pos = UnityObjectToClipPos(input[0].worldPos + _Factor * fixed4(0, saturate(dot(worldNorm0.xyz, fixed3(0, 1, 0))), 0, 0));
+					o.pos = UnityObjectToClipPos(input[0].worldPos + _Factor * normFac * fixed4(0, saturate(dot(worldNorm0.xyz, fixed3(0, 1, 0))), 0, 0));
 					o.worldPos = input[0].worldPos + fixed4(0, 1, 0, 0);
 					o.uv = input[0].uv;
 					o.snowUV = input[0].snowUV;
@@ -111,7 +113,7 @@ Shader "Custom/BasicGeoShader"
 
 					//o.vertex = mul(unity_ObjectToWorld, input[1].vertex - normalize((input[1].vertex - input[0].vertex) + (input[1].vertex - input[2].vertex)) * _Factor);
 					//o.vertex = input[1].vertex;
-					o.pos = UnityObjectToClipPos(input[1].worldPos + _Factor * fixed4(0, saturate(dot(worldNorm1.xyz, fixed3(0, 1, 0))), 0, 0));
+					o.pos = UnityObjectToClipPos(input[1].worldPos + _Factor * normFac * fixed4(0, saturate(dot(worldNorm1.xyz, fixed3(0, 1, 0))), 0, 0));
 					o.worldPos = input[1].worldPos + fixed4(0, 1, 0, 0);
 					o.uv = input[1].uv;
 					o.snowUV = input[1].snowUV;
@@ -124,7 +126,7 @@ Shader "Custom/BasicGeoShader"
 
 					//o.vertex = mul(unity_ObjectToWorld, input[2].vertex - normalize((input[2].vertex - input[1].vertex)  + (input[2].vertex - input[0].vertex)) * _Factor);
 					//o.vertex = input[2].vertex;
-					o.pos = UnityObjectToClipPos(input[2].worldPos + _Factor * fixed4(0, saturate(dot(worldNorm2.xyz, fixed3(0, 1, 0))),0,0));
+					o.pos = UnityObjectToClipPos(input[2].worldPos + _Factor * normFac * fixed4(0, saturate(dot(worldNorm2.xyz, fixed3(0, 1, 0))),0,0));
 					o.worldPos = input[2].worldPos + fixed4(0, 1, 0, 0);
 					o.uv = input[2].uv;
 					o.snowUV = input[2].snowUV;

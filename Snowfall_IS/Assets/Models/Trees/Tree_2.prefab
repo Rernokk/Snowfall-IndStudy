@@ -334,7 +334,7 @@ MonoBehaviour:
   m_Name: Tree Data
   m_EditorClassIdentifier: 
   _uniqueID: 485
-  materialHash: 65fa139b7c8e47a9b66f5e42db939ae018874368
+  materialHash: 31d6cfe0d16ae931b73c59d7e0c089c018874368
   root:
     _uniqueID: 1
     seed: 1234
@@ -433,7 +433,7 @@ MonoBehaviour:
     enableAmbientOcclusion: 1
     enableMaterialOptimize: 1
     aoDensity: 1
-    rootSpread: 2
+    rootSpread: 0
     groundOffset: 0.64
     rootMatrix:
       e00: 1
@@ -1181,7 +1181,7 @@ MonoBehaviour:
     vertEnd: 0
     capRange: 0
     breakOffset: 1
-    size: 2
+    size: 0
     scale: 1
     offset: 0
     baseAngle: 0
