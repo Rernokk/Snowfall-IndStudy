@@ -14,6 +14,14 @@ public class DepthCameraTest : MonoBehaviour {
 
 	void Start()
 	{
+		if (transform.name == "OverheadA"){
+			GameObject heightGuide = GameObject.FindGameObjectWithTag("Heightguide");
+			Vector3 tarPos = new Vector3(50, heightGuide.GetComponent<Collider>().bounds.center.y, 50);
+			tarPos += Vector3.up * heightGuide.GetComponent<Collider>().bounds.extents.y;
+			transform.position = tarPos;
+			GetComponent<Camera>().farClipPlane = heightGuide.GetComponent<Collider>().bounds.extents.y*2f;
+		}
+
 		rTex = new RenderTexture(512, 512, 24);
 
 		Camera cam = GetComponent<Camera>();
@@ -34,10 +42,12 @@ public class DepthCameraTest : MonoBehaviour {
 		if (transform.name == "OverheadA"){
 			//river.texA = tex;
 			river.texA2D = tex;
-		} else {
+		} else if (transform.name == "OverheadB") {
 			//river.texB = tex;
 			river.texB2D = tex;
+		} else if (transform.name == "OverheadC"){
+			river.texC2D = tex;
 		}
-		//river.CalculateFlowMap();
+		river.CalculateFlowMap();
 	}
 }

@@ -1,20 +1,17 @@
-﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-Shader "Custom/BasicGeoShader"
+﻿Shader "Custom/BasicGeoShader"
 {
 	Properties
 	{
 		_MainTex("Texture", 2D) = "white" {}
 		_SnowTex("Snow Texture", 2D) = "white" {}
-		_Factor("Factor", Range(0, 0.05)) = 0.0
+		_Factor("Factor", Range(0, .15)) = 0.0
 		_Color("Color", Color) = (1,1,1,1)
 		_SnowAccum("Snow Accumulation", Range(0, 1)) = 0.0
+		_SnowMultFactor("Snow Mult Factor Value", Range(.5, 10)) = 1
 	}
 	
 	SubShader
 	{
-
-
 		Pass
 		{
 			Tags{ "LightMode" = "ForwardBase" }
@@ -29,12 +26,13 @@ Shader "Custom/BasicGeoShader"
 				#include "Lighting.cginc"
 
 				sampler2D _MainTex;
-				float4 _MainTex_ST;
 				sampler2D _SnowTex;
+				float4 _MainTex_ST;
 				float4 _SnowTex_ST;
+				float4 _Color;
 				float _Factor;
 				float _SnowAccum;
-				float4 _Color;
+				float _SnowMultFactor;
 
 				struct appdata {
 					float4 pos : POSITION;
@@ -76,7 +74,7 @@ Shader "Custom/BasicGeoShader"
 					o.normal = v.normal;
 					fixed3 worldNormal = UnityObjectToWorldNormal(v.normal);
 					half nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-					o.diff = nl * _LightColor0.rgb;
+					o.diff = fixed3(0,0,0);
 					o.ambient = ShadeSH9(half4(worldNormal, 1));
 					TRANSFER_SHADOW(o)
 					return o;
@@ -86,54 +84,56 @@ Shader "Custom/BasicGeoShader"
 				void geom(triangle v2g input[3], inout TriangleStream<g2f> TriStream) {
 					g2f o;
 
-					float3 p0 = input[0].worldPos.xyz;
-					float3 p1 = input[1].worldPos.xyz;
-					float3 p2 = input[2].worldPos.xyz;
-					float3 triNorm = normalize(cross(p1 - p0, p2 - p0)) * _Factor;
+					fixed4 temp = fixed4(0, 0, 0, 0);
+					float4 p0 = UnityObjectToClipPos(input[0].worldPos + temp);
+					float4 p1 = UnityObjectToClipPos(input[1].worldPos + temp);
+					float4 p2 = UnityObjectToClipPos(input[2].worldPos + temp);
+					float3 triNorm = normalize(cross(p1 - p0, p2 - p0));
 
 					float4 worldNorm0 = mul(unity_ObjectToWorld, input[0].normal);
 					float4 worldNorm1 = mul(unity_ObjectToWorld, input[1].normal);
 					float4 worldNorm2 = mul(unity_ObjectToWorld, input[2].normal);
 
-					float normFac = 0;
+					float normFac = 1;
 
 					//o.vertex = mul(unity_ObjectToWorld, input[0].vertex - normalize((input[0].vertex - input[1].vertex) + (input[0].vertex - input[2].vertex)) * _Factor);
 					//o.vertex = input[0].vertex;
 
-					o.pos = UnityObjectToClipPos(input[0].worldPos + _Factor * normFac * fixed4(0, saturate(dot(worldNorm0.xyz, fixed3(0, 1, 0))), 0, 0));
-					o.worldPos = input[0].worldPos + fixed4(0, 1, 0, 0);
+					
+					o.pos = p0;
+					o.worldPos = input[0].worldPos;
 					o.uv = input[0].uv;
 					o.snowUV = input[0].snowUV;
 					o.col = worldNorm0;
 					o.normal = worldNorm0;
-					o.diff = input[0].diff;
-					o.ambient = input[0].ambient;
+					o.diff = max(0, dot(worldNorm0, _WorldSpaceLightPos0.xyz)) * _LightColor0.rgb;
+					o.ambient = ShadeSH9(half4(worldNorm0));
 					TRANSFER_SHADOW(o);
 					TriStream.Append(o);
 
 					//o.vertex = mul(unity_ObjectToWorld, input[1].vertex - normalize((input[1].vertex - input[0].vertex) + (input[1].vertex - input[2].vertex)) * _Factor);
 					//o.vertex = input[1].vertex;
-					o.pos = UnityObjectToClipPos(input[1].worldPos + _Factor * normFac * fixed4(0, saturate(dot(worldNorm1.xyz, fixed3(0, 1, 0))), 0, 0));
-					o.worldPos = input[1].worldPos + fixed4(0, 1, 0, 0);
+					o.pos = p1;
+					o.worldPos = input[1].worldPos;
 					o.uv = input[1].uv;
 					o.snowUV = input[1].snowUV;
 					o.col = worldNorm1;
 					o.normal = worldNorm1;
-					o.diff = input[1].diff;
-					o.ambient = input[1].ambient;
+					o.diff = max(0, dot(worldNorm1, _WorldSpaceLightPos0.xyz)) * _LightColor0.rgb;
+					o.ambient = ShadeSH9(half4(worldNorm1));
 					TRANSFER_SHADOW(o);
 					TriStream.Append(o);
 
 					//o.vertex = mul(unity_ObjectToWorld, input[2].vertex - normalize((input[2].vertex - input[1].vertex)  + (input[2].vertex - input[0].vertex)) * _Factor);
 					//o.vertex = input[2].vertex;
-					o.pos = UnityObjectToClipPos(input[2].worldPos + _Factor * normFac * fixed4(0, saturate(dot(worldNorm2.xyz, fixed3(0, 1, 0))),0,0));
-					o.worldPos = input[2].worldPos + fixed4(0, 1, 0, 0);
+					o.pos = p2;
+					o.worldPos = input[2].worldPos;
 					o.uv = input[2].uv;
 					o.snowUV = input[2].snowUV;
 					o.col = worldNorm2;
 					o.normal = worldNorm2;
-					o.diff = input[2].diff;
-					o.ambient = input[2].ambient;
+					o.diff = max(0, dot(worldNorm2, _WorldSpaceLightPos0.xyz)) * _LightColor0.rgb;
+					o.ambient = ShadeSH9(half4(worldNorm2));
 					TRANSFER_SHADOW(o);
 					TriStream.Append(o);
 

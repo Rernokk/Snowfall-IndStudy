@@ -13,12 +13,13 @@
 	}
 
 	SubShader {
-		Tags { "RenderType"="Transparent" }
+		Tags { "RenderType"="Transparent" "Queue" = "Transparent" }
 		LOD 200
+
 
 		CGPROGRAM
 		// Physically based Standard lighting model, and enable shadows on all light types
-		#pragma surface surf Standard fullforwardshadows vertex:vert alpha
+		#pragma surface surf Standard fullforwardshadows vertex:vert alpha:fade
 
 		// Use shader model 3.0 target, to get nicer looking lighting
 		#pragma target 3.0
@@ -53,8 +54,8 @@
 		}
 
 		void surf (Input IN, inout SurfaceOutputStandard o) {
-			fixed2 flowmapSample = (2 * (tex2D(_FlowTex, IN.uv_MainTex * 50.0).rg)) - 1;
-			fixed noiseSample = tex2D(_NoiseTex, IN.uv_MainTex * 50.0).r;
+			fixed2 flowmapSample = (2 * (tex2D(_FlowTex, IN.uv_MainTex).rg)) - 1;
+			fixed noiseSample = tex2D(_NoiseTex, IN.uv_MainTex).r;
 
 			float timeSample = frac(_Time[1] * _Rate);
 			float timeSampleTwo = frac(_Time[1] * _Rate + .5);
@@ -67,9 +68,6 @@
 			//Display offset albedo
 			o.Albedo = lerp(albedoSample.rgb, albedoSampleTwo.rgb, 2 * abs(timeSample - .5f)) * _Color;
 
-			//Display Flow Map
-			//o.Albedo = tex2D(_FlowTex, IN.uv_MainTex);
-			//o.Alpha = 1;
 
 			//Normal Map
 			o.Normal = lerp(normalSampleOne.rgb, normalSampleTwo.rgb,2 * abs(timeSample - .5f));
@@ -81,6 +79,14 @@
 			float glossSampleTwo = tex2D(_GlossMap, IN.uv_MainTex + flowmapSample * timeSampleTwo).r;
 			o.Smoothness = _Glossiness * lerp(glossSampleOne, glossSampleTwo, 2 * abs(timeSample-.5f));
 			o.Alpha = _Alpha;
+
+
+			//Debug
+			/*o.Albedo = tex2D(_FlowTex, IN.uv_MainTex);
+			o.Alpha = 1;
+			o.Smoothness = 0;
+			o.Metallic = 0;*/
+			
 		}
 		ENDCG
 	}
