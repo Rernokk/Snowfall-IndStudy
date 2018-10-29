@@ -1,4 +1,6 @@
-﻿Shader "Custom/RiverflowShader" {
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+Shader "Custom/RiverflowShader" {
 	Properties {
 		_Color ("Color", Color) = (1,1,1,1)
 		_MainTex ("Albedo (RGB)", 2D) = "white" {}
@@ -19,7 +21,7 @@
 
 		CGPROGRAM
 		// Physically based Standard lighting model, and enable shadows on all light types
-		#pragma surface surf Standard fullforwardshadows vertex:vert alpha:fade
+		#pragma surface surf Standard fullforwardshadows  alpha:fade vertex:vert
 
 		// Use shader model 3.0 target, to get nicer looking lighting
 		#pragma target 3.0
@@ -32,6 +34,8 @@
 
 		struct Input {
 			float2 uv_MainTex;
+			float2 screenPos;
+			float3 worldPos;
 		};
 
 		half _Glossiness;
@@ -48,10 +52,10 @@
 		UNITY_INSTANCING_BUFFER_END(Props)
 
 		void vert(inout appdata_tan data) {
-			fixed4 dat = data.vertex ;
-			data.vertex = dat;
+			fixed4 dat = UnityObjectToClipPos(data.vertex);
 			data.vertex = UnityPixelSnap(data.vertex);
 		}
+
 
 		void surf (Input IN, inout SurfaceOutputStandard o) {
 			fixed2 flowmapSample = (2 * (tex2D(_FlowTex, IN.uv_MainTex).rg)) - 1;
@@ -60,33 +64,30 @@
 			float timeSample = frac(_Time[1] * _Rate);
 			float timeSampleTwo = frac(_Time[1] * _Rate + .5);
 
-			fixed4 albedoSample = (tex2D(_MainTex, IN.uv_MainTex + flowmapSample * timeSample));
-			fixed4 albedoSampleTwo = (tex2D(_MainTex, IN.uv_MainTex + flowmapSample * timeSampleTwo));
-			fixed4 normalSampleOne = tex2D(_NormTex, IN.uv_MainTex + flowmapSample * _Rate * timeSample);
-			fixed4 normalSampleTwo = tex2D(_NormTex, IN.uv_MainTex + flowmapSample * _Rate * timeSampleTwo);
+			fixed4 albedoSample = (tex2D(_MainTex, IN.uv_MainTex - flowmapSample * timeSample));
+			fixed4 albedoSampleTwo = (tex2D(_MainTex, IN.uv_MainTex - flowmapSample * timeSampleTwo));
+			fixed4 normalSampleOne = tex2D(_NormTex, IN.uv_MainTex - flowmapSample * _Rate * timeSample);
+			fixed4 normalSampleTwo = tex2D(_NormTex, IN.uv_MainTex - flowmapSample * _Rate * timeSampleTwo);
 
 			//Display offset albedo
 			o.Albedo = lerp(albedoSample.rgb, albedoSampleTwo.rgb, 2 * abs(timeSample - .5f)) * _Color;
-
 
 			//Normal Map
 			o.Normal = lerp(normalSampleOne.rgb, normalSampleTwo.rgb,2 * abs(timeSample - .5f));
 
 			// Metallic and smoothness come from slider variables
-			o.Metallic = _Metallic;
 			
-			float glossSampleOne = tex2D(_GlossMap, IN.uv_MainTex + flowmapSample * timeSample).r;
-			float glossSampleTwo = tex2D(_GlossMap, IN.uv_MainTex + flowmapSample * timeSampleTwo).r;
+			float glossSampleOne = tex2D(_GlossMap, IN.uv_MainTex - flowmapSample * timeSample).r;
+			float glossSampleTwo = tex2D(_GlossMap, IN.uv_MainTex - flowmapSample * timeSampleTwo).r;
 			o.Smoothness = _Glossiness * lerp(glossSampleOne, glossSampleTwo, 2 * abs(timeSample-.5f));
+			o.Metallic = o.Smoothness;
 			o.Alpha = _Alpha;
-
 
 			//Debug
 			/*o.Albedo = tex2D(_FlowTex, IN.uv_MainTex);
 			o.Alpha = 1;
 			o.Smoothness = 0;
 			o.Metallic = 0;*/
-			
 		}
 		ENDCG
 	}

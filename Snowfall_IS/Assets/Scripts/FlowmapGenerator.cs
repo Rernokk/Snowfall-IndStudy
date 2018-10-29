@@ -13,7 +13,7 @@ public class FlowmapGenerator : MonoBehaviour
 	private float cutFactor = .05f;
 
 	[SerializeField]
-	private bool applyBlur = false;
+	private bool GenerateTexture = true;
 
 	[SerializeField]
 	private int amnt;
@@ -66,14 +66,15 @@ public class FlowmapGenerator : MonoBehaviour
 
 	public void CalculateFlowMap()
 	{
+		if (!GenerateTexture)
+			return;
+
 		if (texA2D == null || texB2D == null || texC2D == null)
 		{
 			return;
 		}
 		float lowestA = 2;
-		float lowestB = 2;
 		float highestA = 0;
-		float highestB = 0;
 
 		texA2D.anisoLevel = 9;
 
@@ -132,59 +133,27 @@ public class FlowmapGenerator : MonoBehaviour
 				Color generatedDirectionColor = new Color(.5f, .5f, 0f);
 				if (colGroup[1, 1].x != 0)
 				{
-					
+					Vector3 tempA = colGroup[1, 1] - colGroup[2, 1];
+					Vector3 tempB = colGroup[1, 1] - colGroup[0, 1];
+					if (tempA.x <= 0 || tempA.y <= 0)
+					{
+						generatedDirectionColor.r = 0;
+					} else {
+						generatedDirectionColor.r = 1;
+					}
+
+					if (tempB.x <= 0 || tempB.y <= 0)
+					{
+						generatedDirectionColor.g = 0;
+					} else {
+						generatedDirectionColor.g = 1;
+					}
 				}
 				generatedTexture.SetPixel(i, j, generatedDirectionColor);
 				//generatedTexture.SetPixel(i, j, new Color(i / (float)generatedTexture.width, j / (float)generatedTexture.height, 0));
 			}
 		}
 
-		//for (int i = 0; i < generatedTexture.width; i++)
-		//{
-		//	for (int j = 0; j < generatedTexture.height; j++)
-		//	{
-		//		if (texB2D.GetPixel(i, j).r <= lowestB)
-		//		{
-		//			continue;
-		//		}
-		//		else
-		//		{ 
-		//			//Sample Heights along X axis
-		//			float sampleXA, sampleXB;
-		//			sampleXA = texB2D.GetPixel(i - 1, j).r * 100;
-		//			sampleXB = texB2D.GetPixel(i + 1, j).r * 100;
-
-		//			//Sample Heights along Y axis
-		//			float sampleYA, sampleYB;
-		//			sampleYA = texB2D.GetPixel(i - 1, j).r * 100;
-		//			sampleYB = texB2D.GetPixel(i + 1, j).r * 100;
-
-		//			//Calculate Direction for X
-		//			float xDirection = sampleXB - sampleXA;
-
-		//			//Calculate Direction for Y
-		//			float yDirection = sampleYB - sampleYA;
-
-		//			//Amplifying Difference for X
-		//			xDirection *= 1;
-
-		//			//Amplifying Difference for Y
-		//			yDirection *= 1;
-
-		//			//Fix Range from (-1, 1) to (0, 1) for X
-		//			xDirection = xDirection * .5f + .5f;
-
-		//			//Fix Range from (-1, 1) to (0, 1) for Y
-		//			yDirection = yDirection * .5f + .5f;
-
-		//			//Assign Color Channels
-		//			generatedTexture.SetPixel(i, j, new Color(xDirection, yDirection, 0));
-		//			if (generatedTexture.GetPixel(i,j) == new Color(.5f,.5f,0f)){
-		//				generatedTexture.SetPixel(i, j, Color.magenta);
-		//			}
-		//		}
-		//	}
-		//}
 
 		generatedTexture.Apply();
 		generatedTexture.filterMode = FilterMode.Point;

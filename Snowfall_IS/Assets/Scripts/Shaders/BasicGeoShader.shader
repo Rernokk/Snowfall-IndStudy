@@ -4,7 +4,7 @@
 	{
 		_MainTex("Texture", 2D) = "white" {}
 		_SnowTex("Snow Texture", 2D) = "white" {}
-		_Factor("Factor", Range(0, .15)) = 0.0
+		_Factor("Factor", Range(0, 1)) = 0.0
 		_Color("Color", Color) = (1,1,1,1)
 		_SnowAccum("Snow Accumulation", Range(0, 1)) = 0.0
 		_SnowMultFactor("Snow Mult Factor Value", Range(.5, 10)) = 1
@@ -67,7 +67,7 @@
 				v2g vert(appdata v)
 				{
 					v2g o;
-					o.pos = UnityObjectToClipPos(v.pos);
+					o.pos = UnityObjectToClipPos(v.pos + v.normal);
 					o.worldPos = v.worldPos;
 					o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 					o.snowUV = TRANSFORM_TEX(v.uv, _SnowTex);
@@ -84,21 +84,20 @@
 				void geom(triangle v2g input[3], inout TriangleStream<g2f> TriStream) {
 					g2f o;
 
-					fixed4 temp = fixed4(0, 0, 0, 0);
-					float4 p0 = UnityObjectToClipPos(input[0].worldPos + temp);
-					float4 p1 = UnityObjectToClipPos(input[1].worldPos + temp);
-					float4 p2 = UnityObjectToClipPos(input[2].worldPos + temp);
-					float3 triNorm = normalize(cross(p1 - p0, p2 - p0));
-
 					float4 worldNorm0 = mul(unity_ObjectToWorld, input[0].normal);
 					float4 worldNorm1 = mul(unity_ObjectToWorld, input[1].normal);
 					float4 worldNorm2 = mul(unity_ObjectToWorld, input[2].normal);
+
+					fixed4 temp = fixed4(0, 0, 0, 0);
+					float4 p0 = UnityObjectToClipPos(input[0].worldPos + worldNorm0 * _Factor);
+					float4 p1 = UnityObjectToClipPos(input[1].worldPos + worldNorm1 * _Factor);
+					float4 p2 = UnityObjectToClipPos(input[2].worldPos + worldNorm2 * _Factor);
+					float3 triNorm = normalize(cross(p1 - p0, p2 - p0));
 
 					float normFac = 1;
 
 					//o.vertex = mul(unity_ObjectToWorld, input[0].vertex - normalize((input[0].vertex - input[1].vertex) + (input[0].vertex - input[2].vertex)) * _Factor);
 					//o.vertex = input[0].vertex;
-
 					
 					o.pos = p0;
 					o.worldPos = input[0].worldPos;
