@@ -12,7 +12,7 @@ public class CameraController : MonoBehaviour {
 	{
 		Camera.main.transform.position = transform.GetChild(0).position;
 		Camera.main.transform.rotation = transform.GetChild(0).rotation;
-		Camera.main.depthTextureMode = DepthTextureMode.DepthNormals;
+		Camera.main.depthTextureMode = DepthTextureMode.Depth;
 	}
 	
 	// Update is called once per frame

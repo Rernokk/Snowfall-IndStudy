@@ -3,6 +3,7 @@
 Shader "Custom/RiverflowShader" {
 	Properties {
 		_Color ("Color", Color) = (1,1,1,1)
+		_FadeColor("Fade Color", Color) = (1,1,1,1)
 		_MainTex ("Albedo (RGB)", 2D) = "white" {}
 		_NormTex ("Normal", 2D) = "white" {}
 		_FlowTex ("Flow Texture", 2D) = "black" {}
@@ -12,11 +13,14 @@ Shader "Custom/RiverflowShader" {
 		_Metallic ("Metallic", Range(0,1)) = 0.0
 		_Rate ("Flow Rate", Range(0, 3)) = 0.0
 		_Alpha ("River Transparency", Range(0, 1)) = 1.0
+		_FadeDist("Fade Distance", Range(.1, 10)) = 1
 	}
 
 	SubShader {
+		Blend SrcAlpha OneMinusSrcAlpha
+		ZWrite On
+
 		Tags { "RenderType"="Transparent" "Queue" = "Transparent" }
-		LOD 200
 
 
 		CGPROGRAM
@@ -34,15 +38,18 @@ Shader "Custom/RiverflowShader" {
 
 		struct Input {
 			float2 uv_MainTex;
-			float2 screenPos;
+			float4 screenPos;
 			float3 worldPos;
 		};
 
 		half _Glossiness;
 		half _Metallic;
 		fixed4 _Color;
+		fixed4 _FadeColor;
+		sampler2D _CameraDepthTexture;
 		fixed _Rate;
 		fixed _Alpha;
+		fixed _FadeDist;
 
 		// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
 		// See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
@@ -59,7 +66,7 @@ Shader "Custom/RiverflowShader" {
 
 		void surf (Input IN, inout SurfaceOutputStandard o) {
 			fixed2 flowmapSample = (2 * (tex2D(_FlowTex, IN.uv_MainTex).rg)) - 1;
-			fixed noiseSample = tex2D(_NoiseTex, IN.uv_MainTex).r;
+			fixed noiseSample = tex2D(_NoiseTex, IN.uv_MainTex + _Time.y).r;
 
 			float timeSample = frac(_Time[1] * _Rate);
 			float timeSampleTwo = frac(_Time[1] * _Rate + .5);
@@ -82,6 +89,15 @@ Shader "Custom/RiverflowShader" {
 			o.Smoothness = _Glossiness * lerp(glossSampleOne, glossSampleTwo, 2 * abs(timeSample-.5f));
 			o.Metallic = o.Smoothness;
 			o.Alpha = _Alpha;
+
+			float sceneZ = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE_PROJ(_CameraDepthTexture, UNITY_PROJ_COORD(IN.screenPos)));
+			float surfZ = -mul(UNITY_MATRIX_V, float4(IN.worldPos.xyz, 1)).z;
+			float diff = sceneZ - surfZ;
+			float fadeAmnt = saturate(.25 + abs(sin(IN.worldPos + _Time.y))) * _FadeDist;
+			float intersect = 1 - saturate(diff/fadeAmnt);
+
+			o.Albedo.rgb = lerp(o.Albedo.rgb, _FadeColor, pow(intersect,2));
+			o.Alpha = lerp(o.Alpha, _FadeColor.a, pow(intersect,2));
 
 			//Debug
 			/*o.Albedo = tex2D(_FlowTex, IN.uv_MainTex);
