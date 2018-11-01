@@ -184,12 +184,11 @@
 
 				v2f vert(appdata_base v) {
 					v2f o;
-					float4 worldVert = mul(unity_ObjectToWorld, v.vertex);
-					float dist = worldVert.z - _WorldSpaceCameraPos.z;
 					float inf = saturate(dot(v.normal, fixed3(0, 1, 0)));
 					inf = inf < _SnowEdgeFactor ? 0 : inf;
 
 					v.vertex += fixed4(v.normal * _Factor * inf, 0);
+					v.vertex.w = 1;
 					TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
 					return o;
 				}
