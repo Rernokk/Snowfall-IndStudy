@@ -27,8 +27,8 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _Cutoff: 0.097
+    - _Cutoff: 0.07462687
     - _Shininess: 0.078125
     m_Colors:
-    - _Color: {r: 0.97404873, g: 1, b: 0, a: 1}
+    - _Color: {r: 0.90588236, g: 0.90588236, b: 0.90588236, a: 1}
     - _SpecColor: {r: 0.18438135, g: 0.2647059, b: 0.0934256, a: 1}
