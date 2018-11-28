@@ -1,4 +1,6 @@
-﻿Shader "Custom/IcicleShader"
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+Shader "Custom/IcicleShader"
 {
 	Properties
 	{
@@ -13,15 +15,18 @@
 		SubShader
 		{
 			Cull Off
+			Blend SrcAlpha OneMinusSrcAlpha
 
 			Pass
 			{
-				Tags{ "LightMode" = "ForwardBase" }
+				//Tags{ "LightMode" = "ForwardBase" }
+				Tags{ "RenderType" = "Transparent" "Queue" = "Transparent" }
 				CGPROGRAM
 				#pragma vertex vert
 				#pragma geometry geom
 				#pragma fragment frag
-				#pragma multi_compile_fwdadd
+				#pragma multi_compile_fwdbase
+				#pragma alpha:fade
 
 				#include "UnityCG.cginc"
 				#include "AutoLight.cginc"
@@ -75,30 +80,34 @@
 				void geom(triangle v2g input[3], inout TriangleStream<g2f> TriStream) {
 					g2f o;
 
-					float noiseSamp = saturate((tex2Dlod(_NoiseTex, fixed4(input[0].uv,0,0)).r - _Lowest) * (1 / (_Highest - _Lowest)));
-					float4 ptFin = fixed4(0, 1, 0, 0) * _NoiseFactor;
+					float noiseSamp;
+					float4 ptFin = fixed4(0, -1, 0, 0) * _NoiseFactor;
 					o.color = fixed4(1, 1, 1, 1);
 					float2 avgUV = input[0].uv + input[1].uv + input[2].uv;
 					avgUV *= .33333;
 
-					if (avgUV.x <= 0.001 || avgUV.x >= .999) {
+					/*if (avgUV.x <= 0.001 || avgUV.x >= .999) {
 						ptFin = float4(0, 0, 0, 0);
-					}
+					}*/
 
+					noiseSamp = saturate((tex2Dlod(_NoiseTex, fixed4(input[0].uv, 0, 0)).r - _Lowest) * (1 / (_Highest - _Lowest)));
 					o.uv = input[0].uv;
-					o.pos = UnityObjectToClipPos(input[0].pos - ptFin * noiseSamp * _NoiseMax);
+					//o.pos = UnityObjectToClipPos(input[0].pos + ptFin * noiseSamp * _NoiseMax);
+					o.pos = UnityObjectToClipPos(mul(unity_WorldToObject, mul(unity_ObjectToWorld, input[0].pos) + ptFin * noiseSamp * _NoiseMax));
 					TRANSFER_SHADOW(o);
 					TriStream.Append(o);
 
 					noiseSamp = saturate((tex2Dlod(_NoiseTex, fixed4(input[1].uv, 0, 0)).r - _Lowest) * (1 / (_Highest - _Lowest)));
 					o.uv = input[1].uv;
-					o.pos = UnityObjectToClipPos(input[1].pos - ptFin * noiseSamp * _NoiseMax);
+					//o.pos = UnityObjectToClipPos(input[1].pos + ptFin * noiseSamp * _NoiseMax);
+					o.pos = UnityObjectToClipPos(mul(unity_WorldToObject, mul(unity_ObjectToWorld, input[1].pos) + ptFin * noiseSamp * _NoiseMax));
 					TRANSFER_SHADOW(o);
 					TriStream.Append(o);
 
 					noiseSamp = saturate((tex2Dlod(_NoiseTex, fixed4(input[2].uv, 0, 0)).r - _Lowest) * (1 / (_Highest - _Lowest)));
 					o.uv = input[2].uv;
-					o.pos = UnityObjectToClipPos(input[2].pos - ptFin * noiseSamp * _NoiseMax);
+					//o.pos = UnityObjectToClipPos(input[2].pos + ptFin * noiseSamp * _NoiseMax);
+					o.pos = UnityObjectToClipPos(mul(unity_WorldToObject, mul(unity_ObjectToWorld, input[2].pos) + ptFin * noiseSamp * _NoiseMax));
 					TRANSFER_SHADOW(o);
 					TriStream.Append(o);
 
@@ -109,7 +118,13 @@
 
 				fixed4 frag(g2f i) : SV_Target
 				{
-					fixed4 col = tex2D(_MainTex, i.uv);
+					fixed4 col = tex2D(_NoiseTex, i.uv);
+					if (col.r > 0.03) {
+						col.a = 1 - col.r * col.r;
+					}
+					else {
+						col.a = 0;
+					}
 					return col;
 				}
 				ENDCG
