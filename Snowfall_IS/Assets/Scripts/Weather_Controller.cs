@@ -10,7 +10,7 @@ public class Weather_Controller : MonoBehaviour {
 	float startVis = 200;
 
 	[SerializeField]
-	Material treeMat;
+	Material treeMat, groundMat;
 
 	[SerializeField]
 	float snowFactorLimit = 0.05f;
@@ -29,6 +29,7 @@ public class Weather_Controller : MonoBehaviour {
 			fog.Visibility = Mathf.Clamp(startVis, 40, 500);
 			progress += Time.deltaTime / 32f;
 			treeMat.SetFloat("_SnowAccum", Mathf.Clamp01(progress));
+			groundMat.SetFloat("_SnowCover", Mathf.Clamp01(progress*.5f));
 			treeMat.SetFloat("_Factor", Mathf.Clamp(snowFactorLimit * progress, 0, snowFactorLimit));
 		}
 	}

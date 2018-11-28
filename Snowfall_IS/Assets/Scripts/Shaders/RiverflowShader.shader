@@ -96,7 +96,7 @@ Shader "Custom/RiverflowShader" {
 			float fadeAmnt = saturate(.25 + abs(sin(IN.worldPos + _Time.y))) * _FadeDist;
 			float intersect = 1 - saturate(diff/fadeAmnt);
 
-			o.Albedo.rgb = lerp(o.Albedo.rgb, _FadeColor, pow(intersect,2));
+			o.Albedo.rgb = lerp(o.Albedo.rgb, _FadeColor, pow(intersect,4));
 			o.Alpha = lerp(o.Alpha, _FadeColor.a, pow(intersect,2));
 
 			//Debug
