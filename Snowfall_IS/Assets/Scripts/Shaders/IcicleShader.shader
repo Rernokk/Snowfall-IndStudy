@@ -26,7 +26,6 @@ Shader "Custom/IcicleShader"
 				#pragma geometry geom
 				#pragma fragment frag
 				#pragma multi_compile_fwdbase
-				#pragma alpha:fade
 
 				#include "UnityCG.cginc"
 				#include "AutoLight.cginc"
@@ -63,7 +62,7 @@ Shader "Custom/IcicleShader"
 					o.normal = v.normal;
 					o.uv = v.uv;
 					o.viewDir = mul(unity_ObjectToWorld, v.pos).xyz - _WorldSpaceCameraPos.xyz;
-					TRANSFER_SHADOW(o);
+					//TRANSFER_SHADOW(o);
 					return o;
 				}
 
@@ -120,7 +119,8 @@ Shader "Custom/IcicleShader"
 				{
 					fixed4 col = tex2D(_NoiseTex, i.uv);
 					if (col.r > 0.03) {
-						col.a = 1 - col.r * col.r;
+						//col.a = 1 - col.r * col.r;
+						col.a = 1;
 					}
 					else {
 						col.a = 0;

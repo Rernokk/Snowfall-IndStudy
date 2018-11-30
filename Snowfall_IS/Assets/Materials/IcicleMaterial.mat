@@ -72,7 +72,7 @@ Material:
     - _Mode: 0
     - _NoiseFactor: 1
     - _NoiseFalloff: 10
-    - _NoiseMax: 1
+    - _NoiseMax: 3
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0

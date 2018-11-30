@@ -63,7 +63,7 @@ Material:
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _Factor: 0.013961973
+    - _Factor: 0.019011807
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -73,7 +73,7 @@ Material:
     - _Parallax: 0.02
     - _Shininess: 25
     - _SmoothnessTextureChannel: 0
-    - _SnowAccum: 0.13961972
+    - _SnowAccum: 0.19011806
     - _SnowEdgeFactor: 0.5
     - _SnowMultFactor: 0.5
     - _SpecularHighlights: 1
