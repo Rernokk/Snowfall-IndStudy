@@ -13,14 +13,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PixelRect:
     serializedVersion: 2
-    x: 0
+    x: 1920
     y: 43
     width: 1920
     height: 997
   m_ShowMode: 4
   m_Title: 
   m_RootView: {fileID: 2}
-  m_MinSize: {x: 950, y: 300}
+  m_MinSize: {x: 950, y: 471}
   m_MaxSize: {x: 10000, y: 10000}
 --- !u!114 &2
 MonoBehaviour:
@@ -111,7 +111,7 @@ MonoBehaviour:
   m_MinSize: {x: 915, y: 421}
   m_MaxSize: {x: 22010, y: 10021}
   vertical: 0
-  controlID: 32
+  controlID: 183
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -135,7 +135,7 @@ MonoBehaviour:
   m_MinSize: {x: 202, y: 421}
   m_MaxSize: {x: 4002, y: 8021}
   vertical: 1
-  controlID: 33
+  controlID: 197
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -154,8 +154,8 @@ MonoBehaviour:
     y: 0
     width: 985
     height: 416
-  m_MinSize: {x: 202, y: 221}
-  m_MaxSize: {x: 4002, y: 4021}
+  m_MinSize: {x: 200, y: 200}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 15}
   m_Panes:
   - {fileID: 15}
@@ -209,7 +209,7 @@ MonoBehaviour:
   m_MinSize: {x: 204, y: 342}
   m_MaxSize: {x: 4004, y: 8042}
   vertical: 1
-  controlID: 55
+  controlID: 49
 --- !u!114 &10
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -330,7 +330,7 @@ MonoBehaviour:
     m_Tooltip: 
   m_Pos:
     serializedVersion: 2
-    x: 0
+    x: 1920
     y: 508
     width: 983
     height: 510
@@ -409,20 +409,20 @@ MonoBehaviour:
     m_Tooltip: 
   m_Pos:
     serializedVersion: 2
-    x: 0
+    x: 1920
     y: 92
     width: 983
     height: 395
   m_PersistentViewDataDictionary: {fileID: 0}
   m_SceneLighting: 1
-  lastFramingTime: 499.3751226665529
+  lastFramingTime: 47025.60876603385
   m_2DMode: 0
   m_isRotationLocked: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 44.83946, y: 17.287941, z: 59.27454}
+    m_Target: {x: 9.965153, y: 13.868346, z: 57.277573}
     speed: 2
-    m_Value: {x: 44.83946, y: 17.287941, z: 59.27454}
+    m_Value: {x: 9.965153, y: 13.868346, z: 57.277573}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -450,13 +450,13 @@ MonoBehaviour:
       speed: 2
       m_Value: 0
   m_Rotation:
-    m_Target: {x: 0.011604172, y: -0.7354576, z: -0.012560403, w: -0.67735523}
+    m_Target: {x: -0.09608113, y: 0.6219911, z: 0.07725084, w: 0.77324814}
     speed: 2
-    m_Value: {x: 0.011604169, y: -0.7354574, z: -0.0125604, w: -0.67735505}
+    m_Value: {x: -0.09608186, y: 0.6219958, z: 0.07725142, w: 0.773254}
   m_Size:
-    m_Target: 28.101013
+    m_Target: 1.5777433
     speed: 2
-    m_Value: 28.101013
+    m_Value: 1.5777433
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -488,30 +488,30 @@ MonoBehaviour:
     m_Tooltip: 
   m_Pos:
     serializedVersion: 2
-    x: 987
+    x: 2907
     y: 92
     width: 228
     height: 442
   m_PersistentViewDataDictionary: {fileID: 0}
   m_TreeViewState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 
-    m_LastClickedID: 0
-    m_ExpandedIDs: 26b2ffffe6fbffff0000000092390000
+    m_SelectedIDs: 8e3f0000
+    m_LastClickedID: 16270
+    m_ExpandedIDs: 44e4ffff00000000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: GenIceGrid
-      m_OriginalName: GenIceGrid
+      m_Name: 
+      m_OriginalName: 
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 0
         height: 0
-      m_UserData: -26160
+      m_UserData: 0
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
-      m_OriginalEventType: 0
+      m_OriginalEventType: 11
       m_IsRenamingFilename: 0
       m_ClientGUIView: {fileID: 10}
     m_SearchString: 
@@ -541,7 +541,7 @@ MonoBehaviour:
     m_Tooltip: 
   m_Pos:
     serializedVersion: 2
-    x: 987
+    x: 2907
     y: 555
     width: 228
     height: 463
@@ -566,7 +566,7 @@ MonoBehaviour:
     m_Tooltip: 
   m_Pos:
     serializedVersion: 2
-    x: 1219
+    x: 3139
     y: 92
     width: 323
     height: 926
@@ -583,20 +583,20 @@ MonoBehaviour:
     m_ShowAllHits: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Prefabs
+    - Assets/Meshes/Bushes/Bush 01/Textures
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets/Prefabs
+  - Assets/Meshes/Bushes/Bush 01/Textures
   m_LastFoldersGridSize: 16
-  m_LastProjectPath: C:\Users\slyth\Desktop\Snowfall_IS\Snowfall_IS
+  m_LastProjectPath: E:\Unity Projects\Snowfall_IS\Snowfall_IS
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: c6120000
-    m_LastClickedID: 4806
-    m_ExpandedIDs: 00000000540b0000620c0000fc0c0000aa0d0000660f0000800f00000010000096100000e21100005e1200002813000000ca9a3b
+    m_SelectedIDs: 06380000
+    m_LastClickedID: 14342
+    m_ExpandedIDs: 000000005e35000040360000ca3600006437000076370000c4380000de38000042390000c6390000d03a00003c3b0000ea3b000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -624,7 +624,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000540b0000620c0000fc0c0000aa0d0000660f0000800f00000010000096100000e21100005e12000028130000
+    m_ExpandedIDs: 000000005e35000040360000ca36000064370000c4380000de38000042390000c6390000d03a00003c3b0000ea3b0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -651,22 +651,22 @@ MonoBehaviour:
   m_ListAreaState:
     m_SelectedInstanceIDs: 
     m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 0
+    m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: 002a0000c6390000f42c0000062a000000000000e845000036290000a027000084d2fcff3e0f0000c60d0000ac2e0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: 
-      m_OriginalName: 
+      m_Name: Bridge_Material
+      m_OriginalName: Bridge_Material
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 0
         height: 0
-      m_UserData: 0
+      m_UserData: 13356
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
-      m_OriginalEventType: 11
+      m_OriginalEventType: 0
       m_IsRenamingFilename: 1
       m_ClientGUIView: {fileID: 12}
     m_CreateAssetUtility:
@@ -699,7 +699,7 @@ MonoBehaviour:
     m_Tooltip: 
   m_Pos:
     serializedVersion: 2
-    x: 1546
+    x: 3466
     y: 92
     width: 374
     height: 926

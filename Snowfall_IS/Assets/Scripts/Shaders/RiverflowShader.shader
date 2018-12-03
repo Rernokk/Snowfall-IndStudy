@@ -17,7 +17,7 @@ Shader "Custom/RiverflowShader" {
 	}
 
 	SubShader {
-		Blend SrcAlpha OneMinusSrcAlpha
+		//Blend SrcAlpha OneMinusSrcAlpha
 		ZWrite On
 
 		Tags { "RenderType"="Transparent" "Queue" = "Transparent" }
@@ -86,7 +86,8 @@ Shader "Custom/RiverflowShader" {
 			
 			float glossSampleOne = tex2D(_GlossMap, IN.uv_MainTex - flowmapSample * timeSample).r;
 			float glossSampleTwo = tex2D(_GlossMap, IN.uv_MainTex - flowmapSample * timeSampleTwo).r;
-			o.Smoothness = _Glossiness * lerp(glossSampleOne, glossSampleTwo, 2 * abs(timeSample-.5f));
+			o.Smoothness = _Glossiness * lerp(glossSampleOne, glossSampleTwo, 2 * abs(timeSample - .5f));
+			//o.Smoothness = _Glossiness;
 			o.Metallic = o.Smoothness;
 			o.Alpha = _Alpha;
 
@@ -100,10 +101,11 @@ Shader "Custom/RiverflowShader" {
 			o.Alpha = lerp(o.Alpha, _FadeColor.a, pow(intersect,2));
 
 			//Debug
-			/*o.Albedo = tex2D(_FlowTex, IN.uv_MainTex);
+			//o.Albedo = tex2D(_FlowTex, IN.uv_MainTex);
+			o.Albedo = fixed3(1,1,1);
 			o.Alpha = 1;
 			o.Smoothness = 0;
-			o.Metallic = 0;*/
+			o.Metallic = 0;
 		}
 		ENDCG
 	}
