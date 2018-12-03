@@ -38,7 +38,7 @@ public class FlowmapGenerator : MonoBehaviour
 		myNoise = new FastNoise();
 		myNoise.SetNoiseType(FastNoise.NoiseType.Perlin);
 		UpdatePerlinNoise();
-		mat.SetTexture("_MainTex", perlinNoise);
+		//mat.SetTexture("_MainTex", perlinNoise);
 
 		CalculateFlowMap();
 	}
@@ -113,7 +113,10 @@ public class FlowmapGenerator : MonoBehaviour
 		{
 			for (int j = 0; j < generatedTexture.height; j++)
 			{
+				//Create Color Group
 				Vector3[,] colGroup = new Vector3[3, 3];
+
+				//Supersample nearby cells
 				for (int k = -1; k <= 1; k++)
 				{
 					for (int l = -1; l <= 1; l++)
@@ -130,7 +133,11 @@ public class FlowmapGenerator : MonoBehaviour
 						}
 					}
 				}
+				
+				//Give Base Color
 				Color generatedDirectionColor = new Color(.5f, .5f, 0f);
+
+				//Check if 
 				if (colGroup[1, 1].x != 0)
 				{
 					Vector3 tempA = colGroup[1, 1] - colGroup[2, 1];

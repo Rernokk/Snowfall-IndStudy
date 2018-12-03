@@ -17,7 +17,7 @@ Shader "Custom/RiverflowShader" {
 	}
 
 	SubShader {
-		//Blend SrcAlpha OneMinusSrcAlpha
+		Blend SrcAlpha OneMinusSrcAlpha
 		ZWrite On
 
 		Tags { "RenderType"="Transparent" "Queue" = "Transparent" }
@@ -98,14 +98,15 @@ Shader "Custom/RiverflowShader" {
 			float intersect = 1 - saturate(diff/fadeAmnt);
 
 			o.Albedo.rgb = lerp(o.Albedo.rgb, _FadeColor, pow(intersect,4));
-			o.Alpha = lerp(o.Alpha, _FadeColor.a, pow(intersect,2));
+			//o.Alpha = lerp(o.Alpha, _FadeColor.a, pow(intersect,2));
+			o.Emission = o.Albedo.rgb * lerp(glossSampleOne, glossSampleTwo, 2 * abs(timeSample - .5f)) * .5f;
 
 			//Debug
 			//o.Albedo = tex2D(_FlowTex, IN.uv_MainTex);
-			o.Albedo = fixed3(1,1,1);
+			/*o.Albedo = fixed3(1,1,1);
 			o.Alpha = 1;
 			o.Smoothness = 0;
-			o.Metallic = 0;
+			o.Metallic = 0;*/
 		}
 		ENDCG
 	}
