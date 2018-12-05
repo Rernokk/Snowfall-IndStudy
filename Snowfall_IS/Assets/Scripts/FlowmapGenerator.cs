@@ -99,7 +99,7 @@ public class FlowmapGenerator : MonoBehaviour
 
 		generatedTexture = new Texture2D(texA2D.width, texA2D.height);
 		generatedTexture.anisoLevel = 0;
-		//generatedTexture.filterMode = FilterMode.Trilinear;
+		generatedTexture.filterMode = FilterMode.Trilinear;
 		
 		for (int i = 0; i < generatedTexture.width; i++)
 		{
@@ -137,30 +137,36 @@ public class FlowmapGenerator : MonoBehaviour
 				//Give Base Color
 				Color generatedDirectionColor = new Color(.5f, .5f, 0f);
 
-				//Check if 
-				if (colGroup[1, 1].x != 0)
+				//Check if color is not the black background
+				if (colGroup[1, 1].x != 0 && (i != 0 || j != 0))
 				{
-					Vector3 tempA = colGroup[1, 1] - colGroup[2, 1];
-					Vector3 tempB = colGroup[1, 1] - colGroup[0, 1];
-					if (tempA.x <= 0 || tempA.y <= 0)
-					{
-						generatedDirectionColor.r = 0;
-					} else {
-						generatedDirectionColor.r = 1;
-					}
-
-					if (tempB.x <= 0 || tempB.y <= 0)
-					{
-						generatedDirectionColor.g = 0;
-					} else {
-						generatedDirectionColor.g = 1;
-					}
+					//Vector results to the origin
+					Vector3 tempA = colGroup[0, 1] - colGroup[2, 1];
+					Vector3 tempB = colGroup[1, 0] - colGroup[1, 2];
+					generatedDirectionColor += new Color(tempA.x, tempB.y, 0) * 100f;
 				}
 				generatedTexture.SetPixel(i, j, generatedDirectionColor);
 				//generatedTexture.SetPixel(i, j, new Color(i / (float)generatedTexture.width, j / (float)generatedTexture.height, 0));
 			}
 		}
 
+		Texture2D tempTex = new Texture2D(generatedTexture.width, generatedTexture.height);
+		int[,] gFilter = new int[,] { { 41, 26, 7 }, { 26, 16, 4 }, { 7, 4, 1 } };
+		for (int i = 1; i < generatedTexture.width - 1; i ++){
+			for (int j = 1; j < generatedTexture.height - 1; j++){
+				Vector3 colArray = Vector3.zero;
+				for (int a = -2; a <= 2; a ++){
+					for (int b = -2; b <= 2; b++){
+						Color col = generatedTexture.GetPixel(a + i, b + j);
+						colArray += new Vector3(col.r, col.g, col.b) * gFilter[Mathf.Abs(a), Mathf.Abs(b)];
+					}
+				}
+				colArray /= 273f;
+				tempTex.SetPixel(i, j, new Color(colArray.x, colArray.y, colArray.z));
+			}
+		}
+		tempTex.Apply();
+		generatedTexture = tempTex;
 
 		generatedTexture.Apply();
 		generatedTexture.filterMode = FilterMode.Point;
@@ -173,4 +179,11 @@ public class FlowmapGenerator : MonoBehaviour
 		output = texB2D.EncodeToPNG();
 		File.WriteAllBytes(Application.dataPath + "/../TexB.png", output);
 	}
+	
+	////Flood-Fill Approach to generation:
+	//public void FloodFillTexture(){
+	//	//Pseudo
+	//	//Find highest point on height map
+	//	//
+	//}
 }
