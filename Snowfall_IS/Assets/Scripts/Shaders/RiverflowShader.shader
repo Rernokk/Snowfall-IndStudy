@@ -22,7 +22,6 @@ Shader "Custom/RiverflowShader" {
 
 		Tags { "RenderType"="Transparent" "Queue" = "Transparent" }
 
-
 		CGPROGRAM
 		// Physically based Standard lighting model, and enable shadows on all light types
 		#pragma surface surf Standard fullforwardshadows  alpha:fade vertex:vert
@@ -97,7 +96,7 @@ Shader "Custom/RiverflowShader" {
 			float fadeAmnt = saturate(.25 + abs(sin(IN.worldPos + _Time.y))) * _FadeDist;
 			float intersect = 1 - saturate(diff/fadeAmnt);
 
-			o.Albedo.rgb = lerp(o.Albedo.rgb, _FadeColor, pow(intersect,4));
+			o.Albedo.rgb = lerp(o.Albedo.rgb, _FadeColor, pow(intersect,4) / (.05f * length(_WorldSpaceCameraPos - IN.worldPos)));
 			//o.Alpha = lerp(o.Alpha, _FadeColor.a, pow(intersect,2));
 			o.Emission = o.Albedo.rgb * lerp(glossSampleOne, glossSampleTwo, 2 * abs(timeSample - .5f)) * .5f;
 

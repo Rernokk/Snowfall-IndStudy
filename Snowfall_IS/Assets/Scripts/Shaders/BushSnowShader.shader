@@ -5,19 +5,16 @@
 		_NormalTex("Normal Tex", 2D) = "white" {}
 		_SnowTex ("Snow Texture", 2D) = "white" {}
 		_AlphaCut("Alpha Cutoff", Range(0,1)) = 1.0
-		_SnowAmnt("Snow Amount", Range (0,1)) = 0.0
 	}
+
 	SubShader {
-		Tags {  "RenderType"="Transparent"
-						"Queue" = "Transparent"
-			}
 		
-		Cull Off
-		ZTest Always
+		//Cull Off
+		ZTest Less
 
 		CGPROGRAM
 		// Physically based Standard lighting model, and enable shadows on all light types
-		#pragma surface surf Lambert fullforwardshadows alpha:blend
+		#pragma surface surf Standard fullforwardshadows addshadow
 
 		// Use shader model 3.0 target, to get nicer looking lighting
 		#pragma target 3.0
@@ -31,7 +28,7 @@
 		};
 
 		half _AlphaCut;
-		half _SnowAmnt;
+		half _BushSnowAmnt;
 		fixed4 _Color;
 
 		// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
@@ -41,24 +38,23 @@
 			// put more per-instance properties here
 		UNITY_INSTANCING_BUFFER_END(Props)
 
-		void surf (Input IN, inout SurfaceOutput o) {
-			// Albedo comes from a texture tinted by color
+		void surf (Input IN, inout SurfaceOutputStandard o) {
 			fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
-			o.Albedo = c.rgb;
-
-			// Metallic and smoothness come from slider variables
+			fixed4 s = tex2D (_SnowTex, IN.uv_MainTex);
+			o.Albedo = saturate(_BushSnowAmnt - s.rgb * s.rgb) * s.rgb + saturate(1 - _BushSnowAmnt + s.rgb * s.rgb) * c.rgb;
+			
 			if (c.a > _AlphaCut){
 				o.Alpha = 1;
 			} else {
 				o.Alpha = 0;
 			}
-			o.Normal = tex2D(_NormalTex, IN.uv_MainTex) * o.Alpha;
-
-			if (o.Alpha == 1) {
-				//o.Albedo = _SnowAmnt * tex2D(_SnowTex, IN.uv_MainTex);
+			if (o.Alpha == 0) {
+				discard;
 			}
+			//o.Normal = UnpackNormal(tex2D(_NormalTex, IN.uv_MainTex));
+
 		}
 		ENDCG
 	}
-	//FallBack "Sprites/Diffuse"
+	FallBack "Diffuse"
 }
